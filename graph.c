@@ -136,8 +136,12 @@ static Window
 /* text constants to be displayed */
 static char
  *titles[] =
-{"L1 MAP", "L2 MAP",	/* input and output L1 lexical maps are combined*/
+{"L1 PHONETIC MAP", "L2 PHONETIC MAP",	/* input and output L1 lexical maps are combined*/
+ "L1 PHONOLOGICAL MAP", "L2 PHONOLOGICAL MAP",
+ "L1 LEXICAL MAP", "L2 LEXICAL MAP",
  "SEMANTIC MAP", "unused",  /* input and output L2 lexical maps are combined*/
+ "unused", "unused",
+ "unused", "unused",
  "unused", "unused"};	/* into one window; their entries are unused */
 
 /* graphics contexts */
@@ -230,9 +234,13 @@ display_init ()
   /* get the size from resourses */
   XtSetArg (args[0], XtNwidth, data.netwidth);
   XtSetArg (args[1], XtNheight, data.l1netheight);
-  l1 = XtCreateManagedWidget ("l1", gwinWidgetClass, form, args, 2);
+  l1phonetic = XtCreateManagedWidget ("l1phonetic", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l2netheight);
-  l2 = XtCreateManagedWidget ("l2", gwinWidgetClass, form, args, 2);
+  l2phonetic = XtCreateManagedWidget ("l2phonetic", gwinWidgetClass, form, args, 2);
+  XtSetArg (args[1], XtNheight, data.l1netheight);
+  l1phonol = XtCreateManagedWidget ("l1phonol", gwinWidgetClass, form, args, 2);
+  XtSetArg (args[1], XtNheight, data.l2netheight);
+  l2phonol = XtCreateManagedWidget ("l2phonol", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.semnetheight);
   sem = XtCreateManagedWidget ("sem", gwinWidgetClass, form, args, 2);
 
@@ -243,13 +251,17 @@ display_init ()
   XtAddCallback (quit, XtNcallback, quit_callback, NULL);
 
   /* network callbacks: redrawing the state */
-  XtAddCallback (l1, XtNexposeCallback, expose_lex, l1units);
-  XtAddCallback (l2, XtNexposeCallback, expose_lex, l2units);
+  XtAddCallback (l1phonetic, XtNexposeCallback, expose_lex, l1phoneticunits);
+  XtAddCallback (l2phonetic, XtNexposeCallback, expose_lex, l2phoneticunits);
+  XtAddCallback (l1phonol, XtNexposeCallback, expose_lex, l1phonol);
+  XtAddCallback (l2phonol, XtNexposeCallback, expose_lex, l2phonol);
   XtAddCallback (sem, XtNexposeCallback, expose_lex, sunits);
 
   /* network callbacks for resizing */
-  XtAddCallback (l1, XtNresizeCallback, resize_lex, NULL);
-  XtAddCallback (l2, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l1phonetic, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l2phonetic, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l1phonol, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l2phonol, XtNresizeCallback, resize_lex, NULL);
   XtAddCallback (sem, XtNresizeCallback, resize_lex, NULL);
 
   /* network event handlers for mouse clicks */
@@ -269,8 +281,10 @@ display_init ()
   commandWin = XtWindow (command);
 
   /* get the lexicon windows */
-  Win[L1WINMOD] = XtWindow (l1);	/* get a pointer to the window */
-  Win[L2WINMOD] = XtWindow (l2);  /* get a pointer to the window */
+  Win[L1PHONETICWINMOD] = XtWindow (l1phonetic);	/* get a pointer to the window */
+  Win[L2PHONETICWINMOD] = XtWindow (l2phonetic);  /* get a pointer to the window */
+  Win[L1PHONOLWINMOD] = XtWindow (l1phonol);  /* get a pointer to the window */
+  Win[L2PHONOLWINMOD] = XtWindow (l2phonol);  /* get a pointer to the window */
   Win[SEMWINMOD] = XtWindow (sem);	/* get a pointer to the window */
 
   /* set a common font for all buttons and command line */
@@ -323,8 +337,10 @@ display_init ()
   createGC (theMain, &activityGC, logfontStruct->fid, theBGpix, theBGpix);
 
   /* calculate all network geometries and put them on screen */
-  resize_lex (l1, NULL, NULL);
-  resize_lex (l2, NULL, NULL);
+  resize_lex (l1phonetic, NULL, NULL);
+  resize_lex (l2phonetic, NULL, NULL);  
+  resize_lex (l1phonol, NULL, NULL);
+  resize_lex (l2phonol, NULL, NULL);
   resize_lex (sem, NULL, NULL);
 
   printf ("Graphics initialization complete.\n");
@@ -448,19 +464,33 @@ static void
 clear_networks_display ()
   /* clear the network activations, labels, logs, and the display */
 {
-  /* clear the L1 map and its display */
-  clear_values (l1units, nl1net);
-  clear_prevvalues (l1units, nl1net);
-  clear_labels (l1units, nl1net);
-  sprintf (net[L1WINMOD].log, "%s", "");
-  XClearArea (theDisplay, Win[L1WINMOD], 0, 0, 0, 0, True);
+  /* clear the L1 phonetic map and its display */
+  clear_values (l1phoneticunits, nl1net);
+  clear_prevvalues (l1phoneticunits, nl1net);
+  clear_labels (l1phoneticunits, nl1net);
+  sprintf (net[L1PHONETICWINMOD].log, "%s", "");
+  XClearArea (theDisplay, Win[L1PHONETICWINMOD], 0, 0, 0, 0, True);
 
-  /* clear the L2 map and its display */
-  clear_values (l2units, nl2net);
-  clear_prevvalues (l2units, nl2net);
-  clear_labels (l2units, nl2net);
-  sprintf (net[L2WINMOD].log, "%s", "");
-  XClearArea (theDisplay, Win[L2WINMOD], 0, 0, 0, 0, True);
+  /* clear the L2 phonetic map and its display */
+  clear_values (l2phoneticunits, nl2net);
+  clear_prevvalues (l2phoneticunits, nl2net);
+  clear_labels (l2phoneticunits, nl2net);
+  sprintf (net[L2PHONETICWINMOD].log, "%s", "");
+  XClearArea (theDisplay, Win[L2PHONETICWINMOD], 0, 0, 0, 0, True);
+
+  /* clear the L1 phonol map and its display */
+  clear_values (l1phonolunits, nl1net);
+  clear_prevvalues (l1phonolunits, nl1net);
+  clear_labels (l1phonolunits, nl1net);
+  sprintf (net[L1PHONOLWINMOD].log, "%s", "");
+  XClearArea (theDisplay, Win[L1PHONOLWINMOD], 0, 0, 0, 0, True);
+
+  /* clear the L2 phonol map and its display */
+  clear_values (l2phonolunits, nl2net);
+  clear_prevvalues (l2phonolunits, nl2net);
+  clear_labels (l2phonolunits, nl2net);
+  sprintf (net[L2PHONOLWINMOD].log, "%s", "");
+  XClearArea (theDisplay, Win[L2PHONOLWINMOD], 0, 0, 0, 0, True);
 
   /* clear the semantic map and its display */
   clear_values (sunits, nsnet);
