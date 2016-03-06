@@ -40,18 +40,18 @@
    which can appear in any order */
 #define L1PHONETICINPMOD 0		/* module # for L1 phonetic input map  */
 #define L2PHONETICINPMOD 1   /* module # for L2 phonetic input map  */
-#define L1PHONOLINPMOD 0   /* module # for L1 phonol input map  */
-#define L2PHONOLINPMOD 1   /* module # for L2 phonol input map  */
-#define L1LEXINPMOD 0   /* module # for L1 lex input map  */
-#define L2LEXINPMOD 1   /* module # for L2 lex input map  */
-#define SINPMOD 2		/* module # for semantic input map  */
-#define L1PHONETICOUTMOD 0    /* module # for L1 phonetic output map  */
-#define L2PHONETICOUTMOD 1   /* module # for L2 phonetic output map  */
-#define L1PHONOLOUTMOD 0   /* module # for L1 phonol output map  */
-#define L2PHONOLOUTMOD 1   /* module # for L2 phonol output map  */
-#define L1LEXOUTMOD 0   /* module # for L1 lex output map  */
-#define L2LEXOUTMOD 1   /* module # for L2 lex output map  */
-#define SOUTMOD 5   /* module # for semantic output map  */
+#define L1PHONOLINPMOD 2   /* module # for L1 phonol input map  */
+#define L2PHONOLINPMOD 3   /* module # for L2 phonol input map  */
+#define L1LEXINPMOD 4   /* module # for L1 lex input map  */
+#define L2LEXINPMOD 5   /* module # for L2 lex input map  */
+#define SINPMOD 6		/* module # for semantic input map  */
+#define L1PHONETICOUTMOD 7    /* module # for L1 phonetic output map  */
+#define L2PHONETICOUTMOD 8   /* module # for L2 phonetic output map  */
+#define L1PHONOLOUTMOD 9   /* module # for L1 phonol output map  */
+#define L2PHONOLOUTMOD 10   /* module # for L2 phonol output map  */
+#define L1LEXOUTMOD 11   /* module # for L1 lex output map  */
+#define L2LEXOUTMOD 12   /* module # for L2 lex output map  */
+#define SOUTMOD 13   /* module # for semantic output map  */
 #define L1PHONETICWINMOD L1PHONETICINPMOD	/* module # for L1 phonetic window */
 #define L2PHONETICWINMOD L2PHONETICINPMOD  /* module # for L2 phonetic window */
 #define L1PHONOLWINMOD L1PHONOLINPMOD /* module # for L1 phonol window */
