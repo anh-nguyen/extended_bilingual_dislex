@@ -38,14 +38,26 @@
    data such as input/output activation, weights, graphics values are kept.
    The processing modules need to be consequtive before memory modules,
    which can appear in any order */
-#define L1INPMOD 0		/* module # for L1 input map  */
-#define L2INPMOD 1   /* module # for L2 input map  */
+#define L1PHONETICINPMOD 0		/* module # for L1 phonetic input map  */
+#define L2PHONETICINPMOD 1   /* module # for L2 phonetic input map  */
+#define L1PHONOLINPMOD 0   /* module # for L1 phonol input map  */
+#define L2PHONOLINPMOD 1   /* module # for L2 phonol input map  */
+#define L1LEXINPMOD 0   /* module # for L1 lex input map  */
+#define L2LEXINPMOD 1   /* module # for L2 lex input map  */
 #define SINPMOD 2		/* module # for semantic input map  */
-#define L1OUTMOD 3		/* module # for L1 output map  */
-#define L2OUTMOD 4    /* module # for L2 output map  */
+#define L1PHONETICOUTMOD 0    /* module # for L1 phonetic output map  */
+#define L2PHONETICOUTMOD 1   /* module # for L2 phonetic output map  */
+#define L1PHONOLOUTMOD 0   /* module # for L1 phonol output map  */
+#define L2PHONOLOUTMOD 1   /* module # for L2 phonol output map  */
+#define L1LEXOUTMOD 0   /* module # for L1 lex output map  */
+#define L2LEXOUTMOD 1   /* module # for L2 lex output map  */
 #define SOUTMOD 5   /* module # for semantic output map  */
-#define L1WINMOD L1INPMOD	/* module # for L1 window */
-#define L2WINMOD L2INPMOD  /* module # for lex window */
+#define L1PHONETICWINMOD L1PHONETICINPMOD	/* module # for L1 phonetic window */
+#define L2PHONETICWINMOD L2PHONETICINPMOD  /* module # for L2 phonetic window */
+#define L1PHONOLWINMOD L1PHONOLINPMOD /* module # for L1 phonol window */
+#define L2PHONOLWINMOD L2PHONOLINPMOD  /* module # for L2 phonol window */
+#define L1LEXWINMOD L1LEXINPMOD /* module # for L1 lex window */
+#define L2LEXWINMOD L2LEXINPMOD  /* module # for L2 lex window */
 #define SEMWINMOD SINPMOD	/* module # for sem window */
 
 /* initialization, index, return code constants */
@@ -96,7 +108,9 @@ FMUNIT;
    and the corresponding semantic word */
 typedef struct PAIRSTRUCT
   {
-    int l1index, l2index, sindex;
+    int l1phoneticindex, l2phoneticindex, 
+        l1phonolindex, l2phonolindex,
+        l1lexindex, l2lexindex, sindex;
   }
 PAIRSTRUCT;
 
@@ -125,8 +139,8 @@ typedef struct RESOURCE_DATA
     int delay;			/* seconds to sleep in major simulation steps*/
     float reversevalue;		/* threshold for reversing color */
     Dimension netwidth,		/* width of network widgets */
-      l1netheight,		/* height of the L1 map window */
-      l2netheight,    /* height of the L2 map window */
+      l1netheight,		/* height of the L1 map window -- same for all L1 subcomponents */
+      l2netheight,    /* height of the L2 map window -- same for all L2 subcomponents */
       semnetheight;		/* height of the semantic map window */
     Boolean owncmap;		/* use private colormap */
     Pixel textColor,		/* color of the text on display */
