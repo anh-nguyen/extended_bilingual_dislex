@@ -137,7 +137,7 @@ iterate_pairs ()
       bool train_l1 = bool_with_prob(l1_exposure);
       bool train_l2 = bool_with_prob(l2_exposure);
       
-      /* first propagate from L1 to L2 and semantic */
+      /* first propagate from within L1 subcomponents to L2 and semantic */
       if (pairs[shuffletable[pairi]].l1phoneticindex != NONE && 
           pairs[shuffletable[pairi]].l1phonolindex != NONE && 
           pairs[shuffletable[pairi]].l1lexindex != NONE && 
@@ -154,7 +154,7 @@ iterate_pairs ()
          pairs[shuffletable[pairi]].l1phoneticindex,
          l1phoneticprop, &nl1prop, l1_nc); 
     }
-	  if (!testing & l1_running) {
+	  if (!testing && l1_running) {
 	    modify_input_weights (L1LEXINPMOD, l1lexunits, l1_alpha, l1lexprop, nl1prop);
       modify_input_weights (L1PHONOLINPMOD, l1phonolunits, l1_alpha, l1phonolprop, nl1prop);
       modify_input_weights (L1PHONETICINPMOD, l1phoneticunits, l1_alpha, l1phoneticprop, nl1prop);
@@ -163,15 +163,47 @@ iterate_pairs ()
 	    associate (l1lexunits, SOUTMOD, sunits, nsnet, swords,
 		       pairs[shuffletable[pairi]].sindex,
 		       l1lexprop, nl1prop, l1lexsassoc);
-    if (testing && l1l2_assoc_running)
-      associate (l1units, L2OUTMOD, l2units, nl2net, l2words,
-           pairs[shuffletable[pairi]].l2index,
-           l1prop, nl1prop, l1l2assoc);
-
+    if (testing && l1_running) {
+      /* lex to phonol */
+      associate(l1lexunits, L1PHONOLOUTMOD, l1phonolunits, nl1net, l1phonolwords,
+           pairs[shuffletable[pairi]].l1phonolindex,
+           l1lexprop, nl1prop, l1lexphonolassoc);
+      /* phonol to lex */
+      associate(l1phonolunits, L1LEXOUTMOD, l1lexunits, nl1net, l1lexwords,
+           pairs[shuffletable[pairi]].l1lexindex,
+           l1phonolprop, nl1prop, l1phonollexassoc);
+      /* phonol to phonetic */
+      associate(l1phonolunits, L1PHONETICOUTMOD, l1phoneticunits, nl1net, l1phoneticwords,
+           pairs[shuffletable[pairi]].l1phoneticindex,
+           l1phonolprop, nl1prop, l1phonolphoneticassoc);
+      /* phonetic to phonol */
+      associate(l1phoneticunits, L1PHONOLOUTMOD, l1phonolunits, nl1net, l1phonolwords,
+           pairs[shuffletable[pairi]].l1phonolindex,
+           l1phoneticprop, nl1prop, l1phoneticphonolassoc);
+    }
+    if (testing && l1l2_assoc_running) {
+      /* lex */
+      associate (l1lexunits, L2LEXOUTMOD, l2lexunits, nl2net, l2lexwords,
+           pairs[shuffletable[pairi]].l2lexindex,
+           l1lexprop, nl1prop, l1l2lexassoc);
+      /* phonol */
+      associate (l1phonolunits, L2LEXOUTMOD, l2phonolunits, nl2net, l2phonolwords,
+           pairs[shuffletable[pairi]].l2phonolindex,
+           l1phonolprop, nl1prop, l1l2phonolassoc);
+      /* phonetic */
+      associate (l1phoneticunits, L2LEXOUTMOD, l2phoneticunits, nl2net, l2phoneticwords,
+           pairs[shuffletable[pairi]].l2phoneticindex,
+           l1phoneticprop, nl1prop, l1l2phoneticassoc);
+    }
 	  if (testing && displaying && (l1_running || l1l2_assoc_running || sl1_assoc_running))
 	    {	
-	      display_lex (L1INPMOD, l1units, nl1net);
-	      display_error (L1INPMOD);
+	      display_lex (L1LEXINPMOD, l1lexunits, nl1net);
+	      display_error (L1LEXINPMOD);
+        display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
+        display_error (L1PHONOLINPMOD);
+        display_lex (L1PHONETICINPMOD, l1phoneticunits, nl1net);
+        display_error (L1PHONETICINPMOD);
+
 	      if (sl1_assoc_running)
 		{
 		  display_lex (SOUTMOD, sunits, nsnet);
@@ -179,21 +211,35 @@ iterate_pairs ()
 		}
         if (l1l2_assoc_running)
     {
-      display_lex (L2OUTMOD, l2units, nl2net);
-      display_error (L2OUTMOD);
+        display_lex (L2LEXOUTMOD, l2lexunits, nl2net);
+        display_error (L2LEXOUTMOD);
+        display_lex (L2PHONOLOUTMOD, l2phonolunits, nl2net);
+        display_error (L2PHONOLOUTMOD);
+        display_lex (L2PHONETICOUTMOD, l2phoneticunits, nl2net);
+        display_error (L2PHONETICOUTMOD);
 
     }
 	      wait_and_handle_events ();
 	    }
 	}
 
-        /* then propagate from L2 to L1 and semantic */
-      if (pairs[shuffletable[pairi]].l2index != NONE && train_l2)
+        /* then propagate from L2 subcomponents to L1 and semantic */
+      if (pairs[shuffletable[pairi]].l2phoneticindex != NONE && 
+          pairs[shuffletable[pairi]].l2phonolindex != NONE && 
+          pairs[shuffletable[pairi]].l2lexindex != NONE && 
+          train_l2)
   {
-    if ((l2_running || l1l2_assoc_running || sl2_assoc_running))
-      present_input (L2INPMOD, l2units, nl2net, l2words,
-         pairs[shuffletable[pairi]].l2index,
-         l2prop, &nl2prop, l2_nc);
+    if ((l2_running || l1l2_assoc_running || sl2_assoc_running)) {
+      present_input (L2LEXINPMOD, l2lexunits, nl2net, l2lexwords,
+         pairs[shuffletable[pairi]].l2lexindex,
+         l2lexprop, &nl2prop, l2_nc); 
+      present_input (L2PHONOLINPMOD, l2phonolunits, nl2net, l2phonolwords,
+         pairs[shuffletable[pairi]].l2phonolindex,
+         l2phonolprop, &nl2prop, l2_nc); 
+      present_input (L2PHONETICINPMOD, l2phoneticunits, nl2net, l2phoneticwords,
+         pairs[shuffletable[pairi]].l2phoneticindex,
+         l2phoneticprop, &nl2prop, l2_nc); 
+    }
     if (!testing & l2_running)
       modify_input_weights (L2INPMOD, l2units, l2_alpha, l2prop, nl2prop);
     if (testing && sl2_assoc_running)
