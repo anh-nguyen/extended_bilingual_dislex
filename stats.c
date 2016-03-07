@@ -67,7 +67,7 @@ init_stats ()
 	  within[modi] = 0;
 	  /* there is a different number of phonolical vs. semantic words */
 	  for (i = 0;
-	       i < ((modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1INPMOD || modi == L1OUTMOD) ? nl1words : nl2words));
+	       i < ((modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1LEXINPMOD || modi == L1LEXOUTMOD || modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD || modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) ? nl1words : nl2words));
 	       i++)
 	    corr[modi][i] = all[modi][i] = 0;
 	}
@@ -89,8 +89,8 @@ collect_stats (modi)
   int nrep;			/* rep dimension (phonolical or semantic) */
   int nwords;			/* number of words (phonolical or semantic) */
 
-  /* first select the right phonolicon */
-  select_phonolicon (modi, &words, &nrep, &nwords);
+  /* first select the right lexicon */
+  select_lexicon (modi, &words, &nrep, &nwords);
   
   /* cumulate error for each output unit */
   for (i = 0; i < noutrep[modi]; i++)

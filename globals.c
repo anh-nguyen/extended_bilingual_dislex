@@ -229,8 +229,12 @@ extern Widget main_widget, form;
 extern NETSTRUCT net[NMODULES];
 extern RESOURCE_DATA data;
 extern int nl1net, nl2net, nsnet;
-extern FMUNIT l1units[MAXLSNET][MAXLSNET],
-  l2units[MAXLSNET][MAXLSNET],
+extern FMUNIT l1lexunits[MAXLSNET][MAXLSNET],
+  l1phonolunits[MAXLSNET][MAXLSNET],
+  l1phoneticunits[MAXLSNET][MAXLSNET],
+  l2lexunits[MAXLSNET][MAXLSNET],
+  l2phonolunits[MAXLSNET][MAXLSNET],
+  l2phoneticunits[MAXLSNET][MAXLSNET],
   sunits[MAXLSNET][MAXLSNET];
 extern double
   l1lexsassoc[MAXLSNET][MAXLSNET][MAXLSNET][MAXLSNET],

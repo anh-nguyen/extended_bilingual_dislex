@@ -373,13 +373,13 @@ iterate_pairs ()
   {
     modify_assoc_weights (l1lexunits, l1phonolunits, l1lexprop, nl1prop, l1phonolprop, nl1prop,
         nl1net, l1lexphonolassoc, l1_alpha);
-    modify_assoc_weights (l1phonounits, l1lexunits, l1phonoprop, nl1prop, l1lexprop, nl1prop,
+    modify_assoc_weights (l1phonolunits, l1lexunits, l1phonolprop, nl1prop, l1lexprop, nl1prop,
         nl1net, l1phonollexassoc, l1_alpha);
     if (displaying)
       { 
         display_lex (L1LEXINPMOD, l1lexunits, nl1net);
         display_error (L1LEXINPMOD);
-        display_lex (L1PHONOLINPMOD, l1phonounits, nl1net);
+        display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
         display_error (L1PHONOLINPMOD);
         wait_and_handle_events ();
       }
@@ -392,13 +392,13 @@ iterate_pairs ()
   {
     modify_assoc_weights (l1phonolunits, l1phoneticunits, l1phonolprop, nl1prop, l1phoneticprop, nl1prop,
         nl1net, l1phonolphoneticassoc, l1_alpha);
-    modify_assoc_weights (l1phonounits, l1phonolunits, l1phonoprop, nl1prop, l1phonolprop, nl1prop,
+    modify_assoc_weights (l1phonolunits, l1phonolunits, l1phonolprop, nl1prop, l1phonolprop, nl1prop,
         nl1net, l1phoneticphonolassoc, l1_alpha);
     if (displaying)
       { 
         display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
         display_error (L1PHONOLINPMOD);
-        display_lex (L1PHONETICINPMOD, l1phonounits, nl1net);
+        display_lex (L1PHONETICINPMOD, l1phonolunits, nl1net);
         display_error (L1PHONETICINPMOD);
         wait_and_handle_events ();
       }
@@ -430,13 +430,13 @@ iterate_pairs ()
   {
     modify_assoc_weights (l2lexunits, l2phonolunits, l2lexprop, nl2prop, l2phonolprop, nl2prop,
         nl2net, l2lexphonolassoc, l2_alpha);
-    modify_assoc_weights (l2phonounits, l2lexunits, l2phonoprop, nl2prop, l2lexprop, nl2prop,
+    modify_assoc_weights (l2phonolunits, l2lexunits, l2phonolprop, nl2prop, l2lexprop, nl2prop,
         nl2net, l2phonollexassoc, l2_alpha);
     if (displaying)
       { 
         display_lex (L2LEXINPMOD, l2lexunits, nl2net);
         display_error (L2LEXINPMOD);
-        display_lex (L2PHONOLINPMOD, l2phonounits, nl2net);
+        display_lex (L2PHONOLINPMOD, l2phonolunits, nl2net);
         display_error (L2PHONOLINPMOD);
         wait_and_handle_events ();
       }
@@ -449,13 +449,13 @@ iterate_pairs ()
   {
     modify_assoc_weights (l2phonolunits, l2phoneticunits, l2phonolprop, nl2prop, l2phoneticprop, nl2prop,
         nl2net, l2phonolphoneticassoc, l2_alpha);
-    modify_assoc_weights (l2phonounits, l2phonolunits, l2phonoprop, nl2prop, l2phonolprop, nl2prop,
+    modify_assoc_weights (l2phonolunits, l2phonolunits, l2phonolprop, nl2prop, l2phonolprop, nl2prop,
         nl2net, l2phoneticphonolassoc, l2_alpha);
     if (displaying)
       { 
         display_lex (L2PHONOLINPMOD, l2phonolunits, nl2net);
         display_error (L2PHONOLINPMOD);
-        display_lex (L2PHONETICINPMOD, l2phonounits, nl2net);
+        display_lex (L2PHONETICINPMOD, l2phonolunits, nl2net);
         display_error (L2PHONETICINPMOD);
         wait_and_handle_events ();
       }
@@ -468,7 +468,7 @@ iterate_pairs ()
   {
     modify_assoc_weights (l2lexunits, l1lexunits, l2lexprop, nl2prop, l1lexprop, nl1prop,
         nl1net, l2l1lexassoc, l1l2_assoc_alpha);
-    modify_assoc_weights (l1units, l2units, l1prop, nl1prop, l2prop, nl2prop,
+    modify_assoc_weights (l1lexunits, l2lexunits, l1lexprop, nl1prop, l2lexprop, nl2prop,
         nl2net, l1l2lexassoc, l1l2_assoc_alpha);
     if (displaying)
       { 
@@ -487,7 +487,7 @@ iterate_pairs ()
   {
     modify_assoc_weights (l2phonolunits, l1phonolunits, l2phonolprop, nl2prop, l1phonolprop, nl1prop,
         nl1net, l2l1phonolassoc, l1l2_assoc_alpha);
-    modify_assoc_weights (l1units, l2units, l1prop, nl1prop, l2prop, nl2prop,
+    modify_assoc_weights (l1phonolunits, l2phonolunits, l1phonolprop, nl1prop, l2phonolprop, nl2prop,
         nl2net, l1l2phonolassoc, l1l2_assoc_alpha);
     if (displaying)
       { 
@@ -506,7 +506,7 @@ iterate_pairs ()
   {
     modify_assoc_weights (l2phoneticunits, l1phoneticunits, l2phoneticprop, nl2prop, l1phoneticprop, nl1prop,
         nl1net, l2l1phoneticassoc, l1l2_assoc_alpha);
-    modify_assoc_weights (l1units, l2units, l1prop, nl1prop, l2prop, nl2prop,
+    modify_assoc_weights (l1phoneticunits, l2phoneticunits, l1phoneticprop, nl1prop, l2phoneticprop, nl2prop,
         nl2net, l1l2phoneticassoc, l1l2_assoc_alpha);
     if (displaying)
       { 
@@ -1107,42 +1107,109 @@ normalize_all_assocweights ()
 /* run through all output weights and normalize */
 /* convenient to do both directions at once */
 {
-  double l1svalue, sl1value, l2svalue, sl2value, l1l2value, l2l1value;
+  double l1value, l2value, l1lexsvalue, sl1lexvalue, l2lexsvalue, sl2lexvalue, l1l2value, l2l1value;
   int i, j, ii, jj;
-	
-  l1svalue = 1.0 / sqrt ((double) (nsnet * nsnet));
-  sl1value = 1.0 / sqrt ((double) (nl1net * nl1net));
+
+  /* l1 lex to sem */
+  l1lexsvalue = 1.0 / sqrt ((double) (nsnet * nsnet));
+  sl1lexvalue = 1.0 / sqrt ((double) (nl1net * nl1net));
   for(i = 0; i < nl1net; i++)
     for(j = 0; j < nl1net; j++)
       for(ii = 0; ii < nsnet; ii++)
-	for(jj = 0; jj < nsnet; jj++)
-	  {
-	    l1sassoc[i][j][ii][jj] = l1svalue;
-	    sl1assoc[ii][jj][i][j] = sl1value;
-	  }
+  for(jj = 0; jj < nsnet; jj++)
+    {
+      l1lexsassoc[i][j][ii][jj] = l1lexsvalue;
+      sl1lexassoc[ii][jj][i][j] = sl1lexvalue;
+    }
 
-  l2svalue = 1.0 / sqrt ((double) (nsnet * nsnet));
-  sl2value = 1.0 / sqrt ((double) (nl2net * nl2net));
+  /* l1 lex to phonol */
+  l1value = 1.0 / sqrt ((double) (nl1net * nl1net));
+  for(i = 0; i < nl1net; i++)
+    for(j = 0; j < nl1net; j++)
+      for(ii = 0; ii < nl1net; ii++)
+  for(jj = 0; jj < nl1net; jj++)
+    {
+      l1lexphonolassoc[i][j][ii][jj] = l1value;
+      l1phonollexassoc[ii][jj][i][j] = l1value;
+    }
+
+  /* l1 phonol to phonetic */
+  for(i = 0; i < nl1net; i++)
+    for(j = 0; j < nl1net; j++)
+      for(ii = 0; ii < nl1net; ii++)
+  for(jj = 0; jj < nl1net; jj++)
+    {
+      l1phonolphoneticassoc[i][j][ii][jj] = l1value;
+      l1phoneticphonolassoc[ii][jj][i][j] = l1value;
+    }
+
+  /* l2 lex to sem */
+  l2lexsvalue = 1.0 / sqrt ((double) (nsnet * nsnet));
+  sl2lexvalue = 1.0 / sqrt ((double) (nl2net * nl2net));
   for(i = 0; i < nl2net; i++)
     for(j = 0; j < nl2net; j++)
       for(ii = 0; ii < nsnet; ii++)
   for(jj = 0; jj < nsnet; jj++)
     {
-      l2sassoc[i][j][ii][jj] = l2svalue;
-      sl2assoc[ii][jj][i][j] = sl2value;
+      l2lexsassoc[i][j][ii][jj] = l2lexsvalue;
+      sl2lexassoc[ii][jj][i][j] = sl2lexvalue;
     }
+
+  /* l2 lex to phonol */
+  l2value = 1.0 / sqrt ((double) (nl2net * nl2net));
+  for(i = 0; i < nl2net; i++)
+    for(j = 0; j < nl2net; j++)
+      for(ii = 0; ii < nl2net; ii++)
+  for(jj = 0; jj < nl2net; jj++)
+    {
+      l2lexphonolassoc[i][j][ii][jj] = l2value;
+      l2phonollexassoc[ii][jj][i][j] = l2value;
+    }
+
+  /* l2 phonol to phonetic */
+  for(i = 0; i < nl2net; i++)
+    for(j = 0; j < nl2net; j++)
+      for(ii = 0; ii < nl2net; ii++)
+  for(jj = 0; jj < nl2net; jj++)
+    {
+      l2phonolphoneticassoc[i][j][ii][jj] = l2value;
+      l2phoneticphonolassoc[ii][jj][i][j] = l2value;
+    }
+
 
   l2l1value = 1.0 / sqrt ((double) (nl1net * nl1net));
   l1l2value = 1.0 / sqrt ((double) (nl2net * nl2net));
+  /* l1 lex to l2 lex */  
   for(i = 0; i < nl2net; i++)
     for(j = 0; j < nl2net; j++)
       for(ii = 0; ii < nl1net; ii++)
   for(jj = 0; jj < nl1net; jj++)
     {
-      l2l1assoc[i][j][ii][jj] = l2l1value;
-      l1l2assoc[ii][jj][i][j] = l1l2value;
+      l2l1lexassoc[i][j][ii][jj] = l2l1value;
+      l1l2lexassoc[ii][jj][i][j] = l1l2value;
+    }
+
+  /* l1 phonol to l2 phonol */  
+  for(i = 0; i < nl2net; i++)
+    for(j = 0; j < nl2net; j++)
+      for(ii = 0; ii < nl1net; ii++)
+  for(jj = 0; jj < nl1net; jj++)
+    {
+      l2l1phonolassoc[i][j][ii][jj] = l2l1value;
+      l1l2phonolassoc[ii][jj][i][j] = l1l2value;
+    }
+
+  /* l1 phonetic to l2 phonetic */  
+  for(i = 0; i < nl2net; i++)
+    for(j = 0; j < nl2net; j++)
+      for(ii = 0; ii < nl1net; ii++)
+  for(jj = 0; jj < nl1net; jj++)
+    {
+      l2l1phoneticassoc[i][j][ii][jj] = l2l1value;
+      l1l2phoneticassoc[ii][jj][i][j] = l1l2value;
     }
 }
+
 
 
 void

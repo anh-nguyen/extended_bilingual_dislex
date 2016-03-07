@@ -127,7 +127,10 @@ static int actual_color_range;	/* number of colors in use */
 static Widget
   runstop, step, clear, quit,	/* buttons */
   command,			/* command input widget */
-  l1, l2, sem;			/* network graphics widgets */
+  l1lex, l2lex, /* network graphics widgets */
+  l1phonol, l2phonol, 
+  l1phonetic, l2phonetic, 
+  sem;			
 
 /* useful pointers to windows */
 static Window
@@ -241,6 +244,10 @@ display_init ()
   l1phonol = XtCreateManagedWidget ("l1phonol", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l2netheight);
   l2phonol = XtCreateManagedWidget ("l2phonol", gwinWidgetClass, form, args, 2);
+  XtSetArg (args[1], XtNheight, data.l1netheight);
+  l1lex = XtCreateManagedWidget ("l1lex", gwinWidgetClass, form, args, 2);
+  XtSetArg (args[1], XtNheight, data.l2netheight);
+  l2lex = XtCreateManagedWidget ("l2lex", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.semnetheight);
   sem = XtCreateManagedWidget ("sem", gwinWidgetClass, form, args, 2);
 
@@ -253,8 +260,10 @@ display_init ()
   /* network callbacks: redrawing the state */
   XtAddCallback (l1phonetic, XtNexposeCallback, expose_lex, l1phoneticunits);
   XtAddCallback (l2phonetic, XtNexposeCallback, expose_lex, l2phoneticunits);
-  XtAddCallback (l1phonol, XtNexposeCallback, expose_lex, l1phonol);
-  XtAddCallback (l2phonol, XtNexposeCallback, expose_lex, l2phonol);
+  XtAddCallback (l1phonol, XtNexposeCallback, expose_lex, l1phonolunits);
+  XtAddCallback (l2phonol, XtNexposeCallback, expose_lex, l2phonolunits);
+  XtAddCallback (l1lex, XtNexposeCallback, expose_lex, l1lexunits);
+  XtAddCallback (l2lex, XtNexposeCallback, expose_lex, l2lexunits);
   XtAddCallback (sem, XtNexposeCallback, expose_lex, sunits);
 
   /* network callbacks for resizing */
@@ -262,12 +271,22 @@ display_init ()
   XtAddCallback (l2phonetic, XtNresizeCallback, resize_lex, NULL);
   XtAddCallback (l1phonol, XtNresizeCallback, resize_lex, NULL);
   XtAddCallback (l2phonol, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l1lex, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l2lex, XtNresizeCallback, resize_lex, NULL);
   XtAddCallback (sem, XtNresizeCallback, resize_lex, NULL);
 
   /* network event handlers for mouse clicks */
-  XtAddEventHandler (l1, ButtonPressMask, FALSE,
+  XtAddEventHandler (l1lex, ButtonPressMask, FALSE,
 		     (XtEventHandler) lexsemmouse_handler, NULL);
-  XtAddEventHandler (l2, ButtonPressMask, FALSE,
+  XtAddEventHandler (l2lex, ButtonPressMask, FALSE,
+         (XtEventHandler) lexsemmouse_handler, NULL);
+  XtAddEventHandler (l1phonol, ButtonPressMask, FALSE,
+         (XtEventHandler) lexsemmouse_handler, NULL);
+  XtAddEventHandler (l2phonol, ButtonPressMask, FALSE,
+         (XtEventHandler) lexsemmouse_handler, NULL);
+  XtAddEventHandler (l1phonetic, ButtonPressMask, FALSE,
+         (XtEventHandler) lexsemmouse_handler, NULL);
+  XtAddEventHandler (l2phonetic, ButtonPressMask, FALSE,
          (XtEventHandler) lexsemmouse_handler, NULL);
   XtAddEventHandler (sem, ButtonPressMask, FALSE,
 		     (XtEventHandler) lexsemmouse_handler, NULL);
@@ -873,7 +892,7 @@ resize_lex (w, client_data, call_data)
     nnet = nl2net;
   }
 
-  XFontStruct *fontstruct = ((w == sem) ? semfontStruct : ((w == l1) ? l1fontStruct : l2fontStruct));
+  XFontStruct *fontstruct = ((w == sem) ? semfontStruct : ((w == l1lex || w == l1phonol || w == l1phonetic) ? l1fontStruct : l2fontStruct));
 
   common_resize (modi, w);	/* get new window size */
 
