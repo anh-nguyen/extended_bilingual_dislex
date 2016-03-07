@@ -808,9 +808,29 @@ expose_lex (w, units, call_data)
      Widget w; XtPointer units, call_data;
 {
   /* figure out the module number and size from the widget given */
-  int
-    modi = ((w == sem) ? SEMWINMOD : ((w == l1) ? L1WINMOD : L2WINMOD)),
-    nnet = ((w == sem) ? nsnet : ((w == l1) ? nl1net : nl2net));
+  int modi, nnet;
+  if (w == sem) {
+    modi = SEMWINMOD;
+    nnet = nsnet;
+  } else if (w == l1phonetic) {
+    modi = L1PHONETICWINMOD;
+    nnet = nl1net;
+  } else if (w == l1phonol) {
+    modi = L1PHONOLWINMOD;
+    nnet = nl1net;
+  } else if (w == l1lex) {
+    modi = L1LEXWINMOD;
+    nnet = nl1net;
+  } else if (w == l2phonetic) {
+    modi = L2PHONETICWINMOD;
+    nnet = nl2net;
+  } else if (w == l2phonol) {
+    modi = L2PHONOLWINMOD;
+    nnet = nl2net;
+  } else {        /* w == l2lex */
+    modi = L2LEXWINMOD;
+    nnet = nl2net;
+  }
   
   XClearWindow (theDisplay, Win[modi]);
   display_title (modi, titles[modi]);
@@ -829,9 +849,29 @@ resize_lex (w, client_data, call_data)
 {
 
   /* figure out the module number, size and font from the widget given */
-  int
-    modi = ((w == sem) ? SEMWINMOD : ((w == l1) ? L1WINMOD : L2WINMOD)),
-    nnet = ((w == sem) ? nsnet : ((w == l1) ? nl1net : nl2net));  
+  int modi, nnet;
+  if (w == sem) {
+    modi = SEMWINMOD;
+    nnet = nsnet;
+  } else if (w == l1phonetic) {
+    modi = L1PHONETICWINMOD;
+    nnet = nl1net;
+  } else if (w == l1phonol) {
+    modi = L1PHONOLWINMOD;
+    nnet = nl1net;
+  } else if (w == l1lex) {
+    modi = L1LEXWINMOD;
+    nnet = nl1net;
+  } else if (w == l2phonetic) {
+    modi = L2PHONETICWINMOD;
+    nnet = nl2net;
+  } else if (w == l2phonol) {
+    modi = L2PHONOLWINMOD;
+    nnet = nl2net;
+  } else {        /* w == l2lex */
+    modi = L2LEXWINMOD;
+    nnet = nl2net;
+  }
 
   XFontStruct *fontstruct = ((w == sem) ? semfontStruct : ((w == l1) ? l1fontStruct : l2fontStruct));
 
@@ -861,27 +901,72 @@ lexsemmouse_handler (w, client_data, p_event)
   int x = p_event->xbutton.x,		/* mouse coordinates */
       y = p_event->xbutton.y;
   
-  if (w == l1) {
-    display_assocweights (L1WINMOD, l1units, nl1net, l1words, nl1rep, nl1words,
+  /* L1 assocs */
+  if (w == l1lex) {
+    display_assocweights (L1LEXWINMOD, l1lexunits, nl1net, l1lexwords, nl1lexrep, nl1lexwords,
 			  SEMWINMOD, sunits, nsnet, swords, nsrep, nswords,
-			  x, y, l1sassoc);
-    display_assocweights (L1WINMOD, l1units, nl1net, l1words, nl1rep, nl1words,
-        L2WINMOD, l2units, nl2net, l2words, nl2rep, nl2words,
-        x, y, l1l2assoc); }
-  else if (w == l2) {
-    display_assocweights (L2WINMOD, l2units, nl2net, l2words, nl2rep, nl2words,
+			  x, y, l1lexsassoc);
+    display_assocweights (L1LEXWINMOD, l1lexunits, nl1net, l1lexwords, nl1lexrep, nl1lexwords,
+        L1PHONOLWINMOD, l1phonolunits, nl1net, l1phonolwords, nl1phonolrep, nl1phonolwords,
+        x, y, l1lexphonolassoc);
+    display_assocweights (L1LEXWINMOD, l1lexunits, nl1net, l1lexwords, nl1lexrep, nl1lexwords,
+        L2LEXWINMOD, l2lexunits, nl2net, l2lexwords, nl2lexrep, nl2lexwords,
+        x, y, l1l2lexassoc); }
+  else if (w == l1phonol) {
+    display_assocweights (L1PHONOLWINMOD, l1phonolunits, nl1net, l1phonolwords, nl1phonolrep, nl1phonolwords,
+        L1LEXWINMOD, l1lexunits, nl1net, l1lexwords, nl1lexrep, nl1lexwords,
+        x, y, l1phonollexassoc);
+    display_assocweights (L1PHONOLWINMOD, l1phonolunits, nl1net, l1phonolwords, nl1phonolrep, nl1phonolwords,
+        L1PHONETICWINMOD, l1phoneticunits, nl1net, l1phoneticwords, nl1phoneticrep, nl1phoneticwords,
+        x, y, l1phonolphoneticassoc);
+    display_assocweights (L1PHONOLWINMOD, l1phonolunits, nl1net, l1phonolwords, nl1phonolrep, nl1phonolwords,
+        L2PHONOLWINMOD, l2phonolunits, nl2net, l2phonolwords, nl2phonolrep, nl2phonolwords,
+        x, y, l1l2phonolassoc); }
+  else if (w == l1phonetic) {
+    display_assocweights (L1PHONETICWINMOD, l1phoneticunits, nl1net, l1phoneticwords, nl1phoneticrep, nl1phoneticwords,
+        L1PHONOLWINMOD, l1phonolunits, nl1net, l1phonolwords, nl1phonolrep, nl1phonolwords,
+        x, y, l1phoneticphonolassoc);
+    display_assocweights (L1PHONETICWINMOD, l1phoneticunits, nl1net, l1phoneticwords, nl1phoneticrep, nl1phoneticwords,
+        L2PHONETICWINMOD, l2phoneticunits, nl2net, l2phoneticwords, nl2phoneticrep, nl2phoneticwords,
+        x, y, l1l2phoneticassoc); }
+
+  /* L2 assocs */
+  if (w == l2lex) {
+    display_assocweights (L2LEXWINMOD, l2lexunits, nl2net, l2lexwords, nl2lexrep, nl2lexwords,
         SEMWINMOD, sunits, nsnet, swords, nsrep, nswords,
-        x, y, l2sassoc);
-    display_assocweights (L2WINMOD, l2units, nl2net, l2words, nl2rep, nl2words,
-        L1WINMOD, l1units, nl1net, l1words, nl1rep, nl1words,
-        x, y, l2l1assoc); }
+        x, y, l2lexsassoc);
+    display_assocweights (L2LEXWINMOD, l2lexunits, nl2net, l2lexwords, nl2lexrep, nl2lexwords,
+        L2PHONOLWINMOD, l2phonolunits, nl2net, l2phonolwords, nl2phonolrep, nl2phonolwords,
+        x, y, l2lexphonolassoc);
+    display_assocweights (L2LEXWINMOD, l2lexunits, nl2net, l2lexwords, nl2lexrep, nl2lexwords,
+        L1LEXWINMOD, l1lexunits, nl1net, l1lexwords, nl1lexrep, nl1lexwords,
+        x, y, l2l1lexassoc); }
+  else if (w == l2phonol) {
+    display_assocweights (L2PHONOLWINMOD, l2phonolunits, nl2net, l2phonolwords, nl2phonolrep, nl2phonolwords,
+        L2LEXWINMOD, l2lexunits, nl2net, l2lexwords, nl2lexrep, nl2lexwords,
+        x, y, l2phonollexassoc);
+    display_assocweights (L2PHONOLWINMOD, l2phonolunits, nl2net, l2phonolwords, nl2phonolrep, nl2phonolwords,
+        L2PHONETICWINMOD, l2phoneticunits, nl2net, l2phoneticwords, nl2phoneticrep, nl2phoneticwords,
+        x, y, l2phonolphoneticassoc);
+    display_assocweights (L2PHONOLWINMOD, l2phonolunits, nl2net, l2phonolwords, nl2phonolrep, nl2phonolwords,
+        L1PHONOLWINMOD, l1phonolunits, nl1net, l1phonolwords, nl1phonolrep, nl1phonolwords,
+        x, y, l2l1phonolassoc); }
+  else if (w == l2phonetic) {
+    display_assocweights (L2PHONETICWINMOD, l2phoneticunits, nl2net, l2phoneticwords, nl2phoneticrep, nl2phoneticwords,
+        L2PHONOLWINMOD, l2phonolunits, nl2net, l2phonolwords, nl2phonolrep, nl2phonolwords,
+        x, y, l2phoneticphonolassoc);
+    display_assocweights (L2PHONETICWINMOD, l2phoneticunits, nl2net, l2phoneticwords, nl2phoneticrep, nl2phoneticwords,
+        L1PHONETICWINMOD, l1phoneticunits, nl1net, l1phoneticwords, nl1phoneticrep, nl1phoneticwords,
+        x, y, l2l1phoneticassoc); }
+
+  /* sem assocs */
   else {
     display_assocweights (SEMWINMOD, sunits, nsnet, swords, nsrep, nswords,
-			  L1WINMOD, l1units, nl1net, l1words, nl1rep, nl1words,
-			  x, y, sl1assoc);
+			  L1LEXWINMOD, l1lexunits, nl1net, l1lexwords, nl1lexrep, nl1lexwords,
+			  x, y, sl1lexassoc);
     display_assocweights (SEMWINMOD, sunits, nsnet, swords, nsrep, nswords,
-        L2WINMOD, l2units, nl2net, l2words, nl2rep, nl2words,
-        x, y, sl2assoc); }
+        L2LEXWINMOD, l2lexunits, nl2net, l2lexwords, nl2lexrep, nl2lexwords,
+        x, y, sl2lexassoc); }
 }
 
 
