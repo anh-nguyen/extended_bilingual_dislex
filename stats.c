@@ -1,6 +1,6 @@
 /* File: stats.c
  *
- * Statistics initialization, collection, and output routines for DISLEX.
+ * Statistics initialization, collection, and output routines for DISPHONETIC.
  *
  * Copyright (C) 1994 Risto Miikkulainen
  *
@@ -65,7 +65,7 @@ init_stats ()
       if (testing)
 	{
 	  within[modi] = 0;
-	  /* there is a different number of lexical vs. semantic words */
+	  /* there is a different number of phonolical vs. semantic words */
 	  for (i = 0;
 	       i < ((modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1INPMOD || modi == L1OUTMOD) ? nl1words : nl2words));
 	       i++)
@@ -85,12 +85,12 @@ collect_stats (modi)
 {
   int i, nearest;
   double uniterror;		/* error of this unit */
-  WORDSTRUCT *words;		/* lexicon (lexical or semantic) */
-  int nrep;			/* rep dimension (lexical or semantic) */
-  int nwords;			/* number of words (lexical or semantic) */
+  WORDSTRUCT *words;		/* phonolicon (phonolical or semantic) */
+  int nrep;			/* rep dimension (phonolical or semantic) */
+  int nwords;			/* number of words (phonolical or semantic) */
 
-  /* first select the right lexicon */
-  select_lexicon (modi, &words, &nrep, &nwords);
+  /* first select the right phonolicon */
+  select_phonolicon (modi, &words, &nrep, &nwords);
   
   /* cumulate error for each output unit */
   for (i = 0; i < noutrep[modi]; i++)
@@ -112,7 +112,7 @@ collect_stats (modi)
     {
       /* cumulate word-based error counts */
       all[modi][target[modi]]++;	/* cumulate total number of words */
-      /* find the representation in the lexicon closest to the output */
+      /* find the representation in the phonolicon closest to the output */
       nearest = find_nearest (outrep[modi], words, nrep, nwords);
       if (nearest == target[modi])
 	/* it was the right one; update the correct count for this word */
@@ -151,9 +151,25 @@ print_stats (epoch)
   /* print all modules separately */
   for (modi = 0; modi < NMODULES; modi++)
     {
-      /* first set the dimensions properly (lexical or semantic) */
-      nwords = (modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1LEXINPMOD || modi == L1LEXOUTMOD || modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD || modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) ? nl1words : nl2words);
-      nrep = (modi == SINPMOD || modi == SOUTMOD) ? nsrep : ((modi == L1INPMOD || modi == L1OUTMOD) ? nl1rep : nl2rep);
+      /* first set the dimensions properly (phonolical or semantic) */
+      nwords = (modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD || modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD || modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) ? nl1words : nl2words);
+      
+      if (modi == SINPMOD || modi == SOUTMOD) {
+        nrep = nsrep;
+      } else if (modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) {
+        nrep = nl1lexrep;
+      } else if (modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD) {
+        nrep = nl1phonolrep;
+      } else if (modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) {
+        nrep = nl1phoneticrep;
+      } else if (modi == L2PHONETICINPMOD || modi == L2PHONETICOUTMOD) {
+        nrep = nl2lexrep;
+      } else if (modi == L2PHONOLINPMOD || modi == L2PHONOLOUTMOD) {
+        nrep = nl2phonolrep;
+      } else {
+        nrep = nl2phoneticrep;
+      }
+
       sum_corr = sum_all = sum_corrinst = sum_allinst = 0;
       /* sum up all word counts and all correct word counts */
       for (i = 0; i < nwords; i++)
