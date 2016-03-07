@@ -817,11 +817,23 @@ read_params (fp)
   if (!strlen(current_inpfile))
     fscanf (fp, "%s", current_inpfile);
 
-  read_till_keyword (fp, SIMU_L1REPFILE, REQUIRED);
-  fscanf (fp, "%s", l1repfile);
+  read_till_keyword (fp, SIMU_L1LEXREPFILE, REQUIRED);
+  fscanf (fp, "%s", l1lexrepfile);
 
-  read_till_keyword (fp, SIMU_L2REPFILE, REQUIRED);
-  fscanf (fp, "%s", l2repfile);
+  read_till_keyword (fp, SIMU_L1PHONOLREPFILE, REQUIRED);
+  fscanf (fp, "%s", l1phonolrepfile);
+
+  read_till_keyword (fp, SIMU_L1PHONETICREPFILE, REQUIRED);
+  fscanf (fp, "%s", l1phoneticrepfile);
+
+  read_till_keyword (fp, SIMU_L2LEXREPFILE, REQUIRED);
+  fscanf (fp, "%s", l2lexrepfile);
+
+  read_till_keyword (fp, SIMU_L2PHONOLREPFILE, REQUIRED);
+  fscanf (fp, "%s", l2phonolrepfile);
+
+  read_till_keyword (fp, SIMU_L2PHONETICREPFILE, REQUIRED);
+  fscanf (fp, "%s", l2phoneticrepfile);
 
   read_till_keyword (fp, SIMU_SREPFILE, REQUIRED);
   fscanf (fp, "%s", srepfile);
@@ -1044,8 +1056,12 @@ read_input_pairs (fp)
 {
   int i = 0;
   char rest[MAXSTRL + 1],	/* holds one line of input data */
-  l1word[MAXSTRL + 1],		/* L1 word read */
-  l2word[MAXSTRL + 1],    /* L2 word read */
+  l1lexword[MAXSTRL + 1],		/* L1 word read */
+  l1phonolword[MAXSTRL + 1],
+  l1phoneticword[MAXSTRL + 1],
+  l2lexword[MAXSTRL + 1],   /* L2 word read */
+  l2phonolword[MAXSTRL + 1],
+  l2phoneticword[MAXSTRL + 1],
   sword[MAXSTRL + 1];		/* semantic word read */
 
   /* find the keyword and get rid of the blanks */
@@ -1063,19 +1079,37 @@ read_input_pairs (fp)
 	  exit (EXIT_SIZE_ERROR);
 	}
 
-      if (sscanf (rest, "%s %s %s", l1word, l2word, sword) != 3)
+      if (sscanf (rest, "%s %s %s %s %s %s %s", l1phoneticword, l2phoneticword, l1phonolword, l2phonolword, l1lexword, l2lexword, sword) != 7)
 	{
 	  fprintf (stderr, "Wrong number of words in an input pair\n");
 	  exit (EXIT_DATA_ERROR);
 	}
-      if (strcasecmp (l1word, INP_NONE))
-	pairs[i].l1index = wordindex (l1word, l1words, nl1words);
+      if (strcasecmp (l1lexword, INP_NONE))
+	pairs[i].l1lexindex = wordindex (l1lexword, l1lexwords, nl1lexwords);
       else
-	pairs[i].l1index = NONE;      
-      if (strcasecmp (l2word, INP_NONE))
-  pairs[i].l2index = wordindex (l2word, l2words, nl2words);
+	pairs[i].l1lexindex = NONE;    
+      if (strcasecmp (l1phonolword, INP_NONE))
+  pairs[i].l1phonolindex = wordindex (l1phonolword, l1phonolwords, nl1phonolwords);
       else
-  pairs[i].l2index = NONE;
+  pairs[i].l1phonolindex = NONE;  
+      if (strcasecmp (l1phoneticword, INP_NONE))
+  pairs[i].l1phoneticindex = wordindex (l1phoneticword, l1phoneticwords, nl1phoneticwords);
+      else
+  pairs[i].l1phoneticindex = NONE;    
+
+      if (strcasecmp (l2lexword, INP_NONE))
+  pairs[i].l2lexindex = wordindex (l2lexword, l2lexwords, nl2lexwords);
+      else
+  pairs[i].l2lexindex = NONE;    
+      if (strcasecmp (l2phonolword, INP_NONE))
+  pairs[i].l2phonolindex = wordindex (l2phonolword, l2phonolwords, nl2phonolwords);
+      else
+  pairs[i].l2phonolindex = NONE;  
+      if (strcasecmp (l2phoneticword, INP_NONE))
+  pairs[i].l2phoneticindex = wordindex (l2phoneticword, l2phoneticwords, nl2phoneticwords);
+      else
+  pairs[i].l2phoneticindex = NONE;    
+
       if (strcasecmp (sword, INP_NONE))
 	pairs[i].sindex = wordindex (sword, swords, nswords);
       else
@@ -1305,7 +1339,7 @@ WORDSTRUCT **words;			/* lexicon pointer*/
 int *nrep,				/* representation size */
   *nwords;				/* number of words */
 {
-  if (modi == SINPMOD && modi == SOUTMOD)
+  if (modi == SINPMOD || modi == SOUTMOD)
     /* it is semantic */
     {
       *words = swords;
@@ -1313,21 +1347,53 @@ int *nrep,				/* representation size */
       *nwords = nswords;
       return (SEMWINMOD);
     }
-  else if (modi == L1INPMOD && modi == L1OUTMOD)
-    /* it is L1 */
+  else if (modi == L1LEXINPMOD || modi == L1LEXOUTMOD)
+    /* L1 lex */
     {
-      *words = l1words;
-      *nrep = nl1rep;
-      *nwords = nl1words;
-      return (L1WINMOD);
+      *words = l1lexwords;
+      *nrep = nl1lexrep;
+      *nwords = nl1lexwords;
+      return (L1LEXWINMOD);
+    }
+  else if (modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD)
+    /* L1 phonol */
+    {
+      *words = l1phonolwords;
+      *nrep = nl1phonolrep;
+      *nwords = nl1phonolwords;
+      return (L1PHONOLWINMOD);
+    }
+  else if (modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD)
+    /* L1 phonetic */
+    {
+      *words = l1phoneticwords;
+      *nrep = nl1phoneticrep;
+      *nwords = nl1phoneticwords;
+      return (L1PHONETICWINMOD);
+    }
+  else if (modi == L2LEXINPMOD || modi == L2LEXOUTMOD)
+    /* L2 lex */
+    {
+      *words = l2lexwords;
+      *nrep = nl2lexrep;
+      *nwords = nl2lexwords;
+      return (L2LEXWINMOD);
+    }
+  else if (modi == L2PHONOLINPMOD || modi == L2PHONOLOUTMOD)
+    /* L2 phonol */
+    {
+      *words = l2phonolwords;
+      *nrep = nl2phonolrep;
+      *nwords = nl2phonolwords;
+      return (L2PHONOLWINMOD);
     }
   else
-    /* it is L2 */
+    /* L2 phonetic */
     {
-      *words = l2words;
-      *nrep = nl2rep;
-      *nwords = nl2words;
-      return (L2WINMOD);
+      *words = l2phoneticwords;
+      *nrep = nl2phoneticrep;
+      *nwords = nl2phoneticwords;
+      return (L2PHONETICWINMOD);
     }
 }
 
