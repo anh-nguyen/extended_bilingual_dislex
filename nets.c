@@ -143,7 +143,7 @@ iterate_pairs ()
           pairs[shuffletable[pairi]].l1lexindex != NONE && 
           train_l1)
 	{
-	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
+	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running)) {
 	    present_input (L1LEXINPMOD, l1lexunits, nl1net, l1lexwords,
 			   pairs[shuffletable[pairi]].l1lexindex,
 			   l1lexprop, &nl1prop, l1_nc); 
@@ -153,14 +153,16 @@ iterate_pairs ()
       present_input (L1PHONETICINPMOD, l1phoneticunits, nl1net, l1phoneticwords,
          pairs[shuffletable[pairi]].l1phoneticindex,
          l1phoneticprop, &nl1prop, l1_nc); 
-	  if (!testing & l1_running)
+    }
+	  if (!testing & l1_running) {
 	    modify_input_weights (L1LEXINPMOD, l1lexunits, l1_alpha, l1lexprop, nl1prop);
       modify_input_weights (L1PHONOLINPMOD, l1phonolunits, l1_alpha, l1phonolprop, nl1prop);
       modify_input_weights (L1PHONETICINPMOD, l1phoneticunits, l1_alpha, l1phoneticprop, nl1prop);
+    }
 	  if (testing && sl1_assoc_running)
-	    associate (l1units, SOUTMOD, sunits, nsnet, swords,
+	    associate (l1lexunits, SOUTMOD, sunits, nsnet, swords,
 		       pairs[shuffletable[pairi]].sindex,
-		       l1prop, nl1prop, l1sassoc);
+		       l1lexprop, nl1prop, l1lexsassoc);
     if (testing && l1l2_assoc_running)
       associate (l1units, L2OUTMOD, l2units, nl2net, l2words,
            pairs[shuffletable[pairi]].l2index,
@@ -773,14 +775,34 @@ iterate_weights (dofun, fp, par1, par2)
   /* L1 map input weights */
   for (i = 0; i < nl1net; i++)
     for (j = 0; j < nl1net; j++)
-      for (k = 0; k < nl1rep; k++)
-	(*dofun) (fp, &l1units[i][j].comp[k], par1, par2);
+      for (k = 0; k < nl1lexrep; k++)
+	(*dofun) (fp, &l1lexunits[i][j].comp[k], par1, par2);
+
+  for (i = 0; i < nl1net; i++)
+    for (j = 0; j < nl1net; j++)
+      for (k = 0; k < nl1phonolrep; k++)
+  (*dofun) (fp, &l1phonolunits[i][j].comp[k], par1, par2);
+
+  for (i = 0; i < nl1net; i++)
+    for (j = 0; j < nl1net; j++)
+      for (k = 0; k < nl1phoneticrep; k++)
+  (*dofun) (fp, &l1phoneticunits[i][j].comp[k], par1, par2);
 
   /* L2 map input weights */
   for (i = 0; i < nl2net; i++)
     for (j = 0; j < nl2net; j++)
-      for (k = 0; k < nl2rep; k++)
-  (*dofun) (fp, &l2units[i][j].comp[k], par1, par2);
+      for (k = 0; k < nl2lexrep; k++)
+  (*dofun) (fp, &l2lexunits[i][j].comp[k], par1, par2);
+
+  for (i = 0; i < nl2net; i++)
+    for (j = 0; j < nl2net; j++)
+      for (k = 0; k < nl2phonolrep; k++)
+  (*dofun) (fp, &l2phonolunits[i][j].comp[k], par1, par2);
+
+  for (i = 0; i < nl2net; i++)
+    for (j = 0; j < nl2net; j++)
+      for (k = 0; k < nl2phoneticrep; k++)
+  (*dofun) (fp, &l2phoneticunits[i][j].comp[k], par1, par2);
 
   /* semantic map input weights */
   for (i = 0; i < nsnet; i++)
@@ -788,14 +810,14 @@ iterate_weights (dofun, fp, par1, par2)
       for (k = 0; k < nsrep; k++)
 	(*dofun) (fp, &sunits[i][j].comp[k], par1, par2);
 
-  /* associative connections */
+  /* L1 L2 lex and Sem associative connections */
   for (i = 0; i < nl1net; i++)
     for (j = 0; j < nl1net; j++)
       for (ii = 0; ii < nsnet; ii++)
 	for (jj = 0; jj < nsnet; jj++)
 	  {
-	    (*dofun) (fp, &l1sassoc[i][j][ii][jj], par1, par2);
-	    (*dofun) (fp, &sl1assoc[ii][jj][i][j], par1, par2);
+	    (*dofun) (fp, &l1lexsassoc[i][j][ii][jj], par1, par2);
+	    (*dofun) (fp, &sl1lexassoc[ii][jj][i][j], par1, par2);
 	  }
 
   for (i = 0; i < nl2net; i++)
@@ -803,8 +825,8 @@ iterate_weights (dofun, fp, par1, par2)
       for (ii = 0; ii < nsnet; ii++)
   for (jj = 0; jj < nsnet; jj++)
     {
-      (*dofun) (fp, &l2sassoc[i][j][ii][jj], par1, par2);
-      (*dofun) (fp, &sl2assoc[ii][jj][i][j], par1, par2);
+      (*dofun) (fp, &l2lexsassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &sl2lexassoc[ii][jj][i][j], par1, par2);
     }
 
   for (i = 0; i < nl2net; i++)
@@ -812,8 +834,64 @@ iterate_weights (dofun, fp, par1, par2)
       for (ii = 0; ii < nl1net; ii++)
   for (jj = 0; jj < nl1net; jj++)
     {
-      (*dofun) (fp, &l2l1assoc[i][j][ii][jj], par1, par2);
-      (*dofun) (fp, &l1l2assoc[ii][jj][i][j], par1, par2);
+      (*dofun) (fp, &l2l1lexassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l1l2lexassoc[ii][jj][i][j], par1, par2);
+    }
+
+  /* L1 L2 phonol and lex associative connections */
+  for (i = 0; i < nl1net; i++)
+    for (j = 0; j < nl1net; j++)
+      for (ii = 0; ii < nl1net; ii++)
+  for (jj = 0; jj < nl1net; jj++)
+    {
+      (*dofun) (fp, &l1lexphonolassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l1phonollexassoc[ii][jj][i][j], par1, par2);
+    }
+
+  for (i = 0; i < nl2net; i++)
+    for (j = 0; j < nl2net; j++)
+      for (ii = 0; ii < nl2net; ii++)
+  for (jj = 0; jj < nl2net; jj++)
+    {
+      (*dofun) (fp, &l2lexphonolassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l2phonollexassoc[ii][jj][i][j], par1, par2);
+    }
+
+  for (i = 0; i < nl2net; i++)
+    for (j = 0; j < nl2net; j++)
+      for (ii = 0; ii < nl1net; ii++)
+  for (jj = 0; jj < nl1net; jj++)
+    {
+      (*dofun) (fp, &l2l1phonolassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l1l2phonolassoc[ii][jj][i][j], par1, par2);
+    }
+
+  /* L1 L2 phonetic and phonol associative connections */
+  for (i = 0; i < nl1net; i++)
+    for (j = 0; j < nl1net; j++)
+      for (ii = 0; ii < nl1net; ii++)
+  for (jj = 0; jj < nl1net; jj++)
+    {
+      (*dofun) (fp, &l1phonolphoneticassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l1phoneticphonolassoc[ii][jj][i][j], par1, par2);
+    }
+
+  for (i = 0; i < nl2net; i++)
+    for (j = 0; j < nl2net; j++)
+      for (ii = 0; ii < nl2net; ii++)
+  for (jj = 0; jj < nl2net; jj++)
+    {
+      (*dofun) (fp, &l2phonolphoneticassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l2phoneticphonolassoc[ii][jj][i][j], par1, par2);
+    }
+
+  for (i = 0; i < nl2net; i++)
+    for (j = 0; j < nl2net; j++)
+      for (ii = 0; ii < nl1net; ii++)
+  for (jj = 0; jj < nl1net; jj++)
+    {
+      (*dofun) (fp, &l2l1phoneticassoc[i][j][ii][jj], par1, par2);
+      (*dofun) (fp, &l1l2phoneticassoc[ii][jj][i][j], par1, par2);
     }
 
 }
