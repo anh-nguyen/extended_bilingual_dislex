@@ -1054,20 +1054,28 @@ display_lex (modi, units, nnet)
   if (modi == SINPMOD || modi == SOUTMOD)
     modi = SEMWINMOD;
   /* both lexical input and output go to the same window */
-  if (modi == L1INPMOD || modi == L1OUTMOD)
-    modi = L1WINMOD;
-  if (modi == L2INPMOD || modi == L2OUTMOD)
-    modi = L2WINMOD;
+  if (modi == L1LEXINPMOD || modi == L1LEXOUTMOD)
+    modi = L1LEXWINMOD;
+  if (modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD)
+    modi = L1PHONOLWINMOD;
+  if (modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD)
+    modi = L1PHONETICWINMOD;
+  if (modi == L2LEXINPMOD || modi == L2LEXOUTMOD)
+    modi = L2LEXWINMOD;
+  if (modi == L2PHONETICINPMOD || modi == L2PHONETICOUTMOD)
+    modi = L2PHONETICWINMOD;
+  if (modi == L2PHONOLINPMOD || modi == L2PHONOLOUTMOD)
+    modi = L2PHONOLWINMOD;
 
   /* lexical and semantic fonts and colors could be different */
-  if (modi == L1WINMOD)
+  if (modi == L1LEXWINMOD || modi == L1PHONOLWINMOD || modi == L1PHONETICWINMOD)
     {
       fontstruct = l1fontStruct;
       currfGC = l1fGC;
       currbGC = l1bGC;
       currnGC = l1nGC;
     }
-  else if (modi == L2WINMOD)
+  else if (modi == L2LEXWINMOD || modi == L2PHONOLWINMOD || modi == L2PHONETICWINMOD)
     {
       fontstruct = l2fontStruct;
       currfGC = l2fGC;
@@ -1120,7 +1128,7 @@ display_error (modi)
   winmodi = select_lexicon (modi, &words, &nrep, &nwords);
 
   /* first figure out whether this is input map or output (associative) map */
-  if (modi == L1INPMOD || modi == L2INPMOD ||modi == SINPMOD)
+  if (modi == L1LEXINPMOD || modi == L1PHONOLINPMOD || modi == L1PHONETICINPMOD || modi == L2LEXINPMOD || modi == L2PHONOLINPMOD || modi == L2PHONETICINPMOD ||modi == SINPMOD)
     sprintf (net[winmodi].log, "Input");
   else
     sprintf (net[winmodi].log, "Assoc");
