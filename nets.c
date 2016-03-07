@@ -101,8 +101,12 @@ iterate_pairs ()
 /* iterate through all pairs; present to maps, propagate, change weights */
 {
   /* propagation through these units */
-  LEXPROPUNIT l1prop[MAXLSNET * MAXLSNET],
-    l2prop[MAXLSNET * MAXLSNET],
+  LEXPROPUNIT l1lexprop[MAXLSNET * MAXLSNET],
+    l1phonolprop[MAXLSNET * MAXLSNET],
+    l1phoneticprop[MAXLSNET * MAXLSNET],
+    l2lexprop[MAXLSNET * MAXLSNET],
+    l2phonolprop[MAXLSNET * MAXLSNET],
+    l2phoneticprop[MAXLSNET * MAXLSNET],
     sprop[MAXLSNET * MAXLSNET];
   int pairi,				/* word pair counter */
     nl1prop, nl2prop, nsprop;			/* lex and sem number of prop units */
@@ -134,14 +138,25 @@ iterate_pairs ()
       bool train_l2 = bool_with_prob(l2_exposure);
       
       /* first propagate from L1 to L2 and semantic */
-      if (pairs[shuffletable[pairi]].l1index != NONE && train_l1)
+      if (pairs[shuffletable[pairi]].l1phoneticindex != NONE && 
+          pairs[shuffletable[pairi]].l1phonolindex != NONE && 
+          pairs[shuffletable[pairi]].l1lexindex != NONE && 
+          train_l1)
 	{
 	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
-	    present_input (L1INPMOD, l1units, nl1net, l1words,
-			   pairs[shuffletable[pairi]].l1index,
-			   l1prop, &nl1prop, l1_nc); 
+	    present_input (L1LEXINPMOD, l1lexunits, nl1net, l1lexwords,
+			   pairs[shuffletable[pairi]].l1lexindex,
+			   l1lexprop, &nl1prop, l1_nc); 
+      present_input (L1PHONOLINPMOD, l1phonolunits, nl1net, l1phonolwords,
+         pairs[shuffletable[pairi]].l1phonolindex,
+         l1phonolprop, &nl1prop, l1_nc); 
+      present_input (L1PHONETICINPMOD, l1phoneticunits, nl1net, l1phoneticwords,
+         pairs[shuffletable[pairi]].l1phoneticindex,
+         l1phoneticprop, &nl1prop, l1_nc); 
 	  if (!testing & l1_running)
-	    modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
+	    modify_input_weights (L1LEXINPMOD, l1lexunits, l1_alpha, l1lexprop, nl1prop);
+      modify_input_weights (L1PHONOLINPMOD, l1phonolunits, l1_alpha, l1phonolprop, nl1prop);
+      modify_input_weights (L1PHONETICINPMOD, l1phoneticunits, l1_alpha, l1phoneticprop, nl1prop);
 	  if (testing && sl1_assoc_running)
 	    associate (l1units, SOUTMOD, sunits, nsnet, swords,
 		       pairs[shuffletable[pairi]].sindex,
