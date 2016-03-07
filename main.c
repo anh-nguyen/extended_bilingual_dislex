@@ -747,12 +747,12 @@ init_system ()
   fclose (fp);
 
   /* read the lexical reps */
-  reps_init (L1_LEX_KEYWORD, l1lexrepfile, l1lexwords, &nl1lexwords, &nl1lexrep);
-  reps_init (L1_PHONOL_KEYWORD, l1phonolrepfile, l1phonolwords, &nl1phonolwords, &nl1phonolrep);
-  reps_init (L1_PHONETIC_KEYWORD, l1phoneticrepfile, l1phoneticwords, &nl1phoneticwords, &nl1phoneticrep);
-  reps_init (L2_LEX_KEYWORD, l2lexrepfile, l2lexwords, &nl2lexwords, &nl2lexrep);
-  reps_init (L2_PHONOL_KEYWORD, l2phonolrepfile, l2phonolwords, &nl2phonolwords, &nl2phonolrep);
-  reps_init (L2_PHONETIC_KEYWORD, l2phoneticrepfile, l2phoneticwords, &nl2phoneticwords, &nl2phoneticrep);
+  reps_init (L1_LEX_KEYWORD, l1lexrepfile, l1lexwords, &nl1words, &nl1lexrep);
+  reps_init (L1_PHONOL_KEYWORD, l1phonolrepfile, l1phonolwords, &nl1words, &nl1phonolrep);
+  reps_init (L1_PHONETIC_KEYWORD, l1phoneticrepfile, l1phoneticwords, &nl1words, &nl1phoneticrep);
+  reps_init (L2_LEX_KEYWORD, l2lexrepfile, l2lexwords, &nl2words, &nl2lexrep);
+  reps_init (L2_PHONOL_KEYWORD, l2phonolrepfile, l2phonolwords, &nl2words, &nl2phonolrep);
+  reps_init (L2_PHONETIC_KEYWORD, l2phoneticrepfile, l2phoneticwords, &nl2words, &nl2phoneticrep);
   
   /* read the semantic reps */
   reps_init (SEMANTIC_KEYWORD, srepfile, swords, &nswords, &nsrep);
@@ -1085,28 +1085,28 @@ read_input_pairs (fp)
 	  exit (EXIT_DATA_ERROR);
 	}
       if (strcasecmp (l1lexword, INP_NONE))
-	pairs[i].l1lexindex = wordindex (l1lexword, l1lexwords, nl1lexwords);
+	pairs[i].l1lexindex = wordindex (l1lexword, l1lexwords, nl1words);
       else
 	pairs[i].l1lexindex = NONE;    
       if (strcasecmp (l1phonolword, INP_NONE))
-  pairs[i].l1phonolindex = wordindex (l1phonolword, l1phonolwords, nl1phonolwords);
+  pairs[i].l1phonolindex = wordindex (l1phonolword, l1phonolwords, nl1words);
       else
   pairs[i].l1phonolindex = NONE;  
       if (strcasecmp (l1phoneticword, INP_NONE))
-  pairs[i].l1phoneticindex = wordindex (l1phoneticword, l1phoneticwords, nl1phoneticwords);
+  pairs[i].l1phoneticindex = wordindex (l1phoneticword, l1phoneticwords, nl1words);
       else
   pairs[i].l1phoneticindex = NONE;    
 
       if (strcasecmp (l2lexword, INP_NONE))
-  pairs[i].l2lexindex = wordindex (l2lexword, l2lexwords, nl2lexwords);
+  pairs[i].l2lexindex = wordindex (l2lexword, l2lexwords, nl2words);
       else
   pairs[i].l2lexindex = NONE;    
       if (strcasecmp (l2phonolword, INP_NONE))
-  pairs[i].l2phonolindex = wordindex (l2phonolword, l2phonolwords, nl2phonolwords);
+  pairs[i].l2phonolindex = wordindex (l2phonolword, l2phonolwords, nl2words);
       else
   pairs[i].l2phonolindex = NONE;  
       if (strcasecmp (l2phoneticword, INP_NONE))
-  pairs[i].l2phoneticindex = wordindex (l2phoneticword, l2phoneticwords, nl2phoneticwords);
+  pairs[i].l2phoneticindex = wordindex (l2phoneticword, l2phoneticwords, nl2words);
       else
   pairs[i].l2phoneticindex = NONE;    
 
@@ -1352,7 +1352,7 @@ int *nrep,				/* representation size */
     {
       *words = l1lexwords;
       *nrep = nl1lexrep;
-      *nwords = nl1lexwords;
+      *nwords = nl1words;
       return (L1LEXWINMOD);
     }
   else if (modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD)
@@ -1360,7 +1360,7 @@ int *nrep,				/* representation size */
     {
       *words = l1phonolwords;
       *nrep = nl1phonolrep;
-      *nwords = nl1phonolwords;
+      *nwords = nl1words;
       return (L1PHONOLWINMOD);
     }
   else if (modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD)
@@ -1368,7 +1368,7 @@ int *nrep,				/* representation size */
     {
       *words = l1phoneticwords;
       *nrep = nl1phoneticrep;
-      *nwords = nl1phoneticwords;
+      *nwords = nl1words;
       return (L1PHONETICWINMOD);
     }
   else if (modi == L2LEXINPMOD || modi == L2LEXOUTMOD)
@@ -1376,7 +1376,7 @@ int *nrep,				/* representation size */
     {
       *words = l2lexwords;
       *nrep = nl2lexrep;
-      *nwords = nl2lexwords;
+      *nwords = nl2words;
       return (L2LEXWINMOD);
     }
   else if (modi == L2PHONOLINPMOD || modi == L2PHONOLOUTMOD)
@@ -1384,7 +1384,7 @@ int *nrep,				/* representation size */
     {
       *words = l2phonolwords;
       *nrep = nl2phonolrep;
-      *nwords = nl2phonolwords;
+      *nwords = nl2words;
       return (L2PHONOLWINMOD);
     }
   else
@@ -1392,7 +1392,7 @@ int *nrep,				/* representation size */
     {
       *words = l2phoneticwords;
       *nrep = nl2phoneticrep;
-      *nwords = nl2phoneticwords;
+      *nwords = nl2words;
       return (L2PHONETICWINMOD);
     }
 }

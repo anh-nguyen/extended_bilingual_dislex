@@ -110,12 +110,19 @@ iterate_pairs ()
   /* first display the current labels and clean previous activations */
   if (displaying)
     {
-      if (l1_running || l1l2_assoc_running || sl1_assoc_running)
-	init_lex_display (L1WINMOD, nl1net, nl1words, l1words, nl1rep, l1units);
-      if (l2_running || l1l2_assoc_running || sl2_assoc_running)
-  init_lex_display (L2WINMOD, nl2net, nl2words, l2words, nl2rep, l2units);
-      if (sem_running || sl1_assoc_running || sl2_assoc_running)
+      if (l1_running || l1l2_assoc_running || sl1_assoc_running) {
+	init_lex_display (L1LEXWINMOD, nl1net, nl1words, l1lexwords, nl1lexrep, l1lexunits);
+  init_lex_display (L1PHONOLWINMOD, nl1net, nl1words, l1phonolwords, nl1phonolrep, l1phonolunits);
+  init_lex_display (L1PHONETICWINMOD, nl1net, nl1words, l1phoneticwords, nl1phoneticrep, l1phoneticunits);
+      }
+      if (l2_running || l1l2_assoc_running || sl2_assoc_running) {
+  init_lex_display (L2LEXWINMOD, nl2net, nl2words, l2lexwords, nl2lexrep, l2lexunits);
+  init_lex_display (L2PHONOLWINMOD, nl2net, nl2words, l2phonolwords, nl2phonolrep, l2phonolunits);
+  init_lex_display (L2PHONETICWINMOD, nl2net, nl2words, l2phoneticwords, nl2phoneticrep, l2phoneticunits); 
+      }
+      if (sem_running || sl1_assoc_running || sl2_assoc_running) {
 	init_lex_display (SEMWINMOD, nsnet, nswords, swords, nsrep, sunits);
+      }
       /* stop if stepping, check for events */
       wait_and_handle_events ();
     }

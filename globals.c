@@ -27,9 +27,7 @@ WORDSTRUCT l1phoneticwords[MAXWORDS],	/* L1 phonetic words */
   l1lexwords[MAXWORDS], /* L1 lexical words */
   l2lexwords[MAXWORDS],  /* L2 lexical words */
   swords[MAXWORDS];		/* semantic words */
-int nl1phoneticwords, nl2phoneticwords, /* number of lexical and semantic words */
-  nl1phonolwords, nl2phonolwords, 
-  nl1lexwords, nl2lexwords,
+int nl1words, nl2words, /* number of lexical and semantic words (same for all subcomponents in L1 and L2) */
   nswords,		
   nl1phoneticrep, nl2phoneticrep, /* dimension of lexical and semantic reps */
   nl1phonolrep, nl2phonolrep,
@@ -158,9 +156,9 @@ RESOURCE_DATA data;		/* resource data structure */
 extern WORDSTRUCT l1phoneticwords[MAXWORDS], l2phoneticwords[MAXWORDS],
                 l1phonolwords[MAXWORDS], l2phonolwords[MAXWORDS],
                 l1lexwords[MAXWORDS], l2lexwords[MAXWORDS], swords[MAXWORDS];
-extern int nl1phoneticwords, nl2phoneticwords, 
-          nl1phonolwords, nl2phonolwords, 
-          nl1lexwords, nl2lexwords,
+extern int nl1words, nl2words, 
+          nl1words, nl2words, 
+          nl1words, nl2words,
           nswords,    
           nl1phoneticrep, nl2phoneticrep,
           nl1phonolrep, nl2phonolrep,

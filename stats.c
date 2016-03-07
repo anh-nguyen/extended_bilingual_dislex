@@ -160,8 +160,10 @@ print_stats (epoch)
         nrep = nl1lexrep;
       } else if (modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD) {
         nrep = nl1phonolrep;
+        nwords = nl1words;
       } else if (modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) {
         nrep = nl1phoneticrep;
+        nwords = nl1words;
       } else if (modi == L2PHONETICINPMOD || modi == L2PHONETICOUTMOD) {
         nrep = nl2lexrep;
       } else if (modi == L2PHONOLINPMOD || modi == L2PHONOLOUTMOD) {
