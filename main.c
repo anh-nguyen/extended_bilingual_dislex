@@ -33,13 +33,21 @@
 #define APP_CLASS "Dislex"		/* class of this application */
 #define DEFAULT_SIMUFILENAME "simu"	/* simulation file */
 #define SEMANTIC_KEYWORD "semantic"	/* name of semantic reps */
-#define L1_KEYWORD "l1"	/* name of L1 reps */
-#define L2_KEYWORD "l2" /* name of L2 reps */
+#define L1_LEX_KEYWORD "l1lex"	/* name of L1 reps */
+#define L1_PHONOL_KEYWORD "l1phonol"
+#define L1_PHONETIC_KEYWORD "l1phonetic"
+#define L2_LEX_KEYWORD "l2lex"  /* name of L2 reps */
+#define L2_PHONOL_KEYWORD "l2phonol"
+#define L2_PHONETIC_KEYWORD "l2phonetic"
 
 /* keywords in the simulation specification file */
 #define SIMU_INPUTFILE "inputfile"
-#define SIMU_L1REPFILE "l1repfile"
-#define SIMU_L2REPFILE "l2repfile"
+#define SIMU_L1LEXREPFILE "l1lexrepfile"
+#define SIMU_L1PHONOLREPFILE "l1phonolrepfile"
+#define SIMU_L1PHONETICREPFILE "l1phoneticrepfile"
+#define SIMU_L2LEXREPFILE "l2lexrepfile"
+#define SIMU_L2PHONOLREPFILE "l2phonolrepfile"
+#define SIMU_L2PHONETICREPFILE "l2phoneticrepfile"
 #define SIMU_SREPFILE "srepfile"
 #define SIMU_L1MAPSIZE "l1mapsize"
 #define SIMU_L2MAPSIZE "l2mapsize"
@@ -203,10 +211,13 @@ static String fallback_resources[] =
   "*command.right: 	ChainRight",
   "*command.top:	ChainTop",
   "*command.bottom:	ChainTop",
-  "*l1.fromVert: 	runstop",
-  "*l1.top:		ChainTop",
-  "*l2.fromVert:  l1",
-  "*sem.fromVert: 	l2",
+  "*sem.fromVert: runstop",
+  "*l1lex.fromVert: sem",
+  "*l2lex.fromHoriz: l1lex",
+  "*l1phonol.fromVert: 	l1lex", 
+  "*l2phonol.fromHoriz:	l1phonol",
+  "*l1phonetic.fromVert:  l1phonol",
+  "*l2phonetic.fromHoriz: 	l1phonetic",
 
   /* define the color defaults */
   "*foreground:	        white",
@@ -736,9 +747,13 @@ init_system ()
   fclose (fp);
 
   /* read the lexical reps */
-  reps_init (L1_KEYWORD, l1repfile, l1words, &nl1words, &nl1rep);
-  reps_init (L2_KEYWORD, l2repfile, l2words, &nl2words, &nl2rep);
-
+  reps_init (L1_LEX_KEYWORD, l1lexrepfile, l1lexwords, &nl1lexwords, &nl1lexrep);
+  reps_init (L1_PHONOL_KEYWORD, l1phonolrepfile, l1phonolwords, &nl1phonolwords, &nl1phonolrep);
+  reps_init (L1_PHONETIC_KEYWORD, l1phoneticrepfile, l1phoneticwords, &nl1phoneticwords, &nl1phoneticrep);
+  reps_init (L2_LEX_KEYWORD, l2lexrepfile, l2lexwords, &nl2lexwords, &nl2lexrep);
+  reps_init (L2_PHONOL_KEYWORD, l2phonolrepfile, l2phonolwords, &nl2phonolwords, &nl2phonolrep);
+  reps_init (L2_PHONETIC_KEYWORD, l2phoneticrepfile, l2phoneticwords, &nl2phoneticwords, &nl2phoneticrep);
+  
   /* read the semantic reps */
   reps_init (SEMANTIC_KEYWORD, srepfile, swords, &nswords, &nsrep);
 
@@ -751,10 +766,18 @@ init_system ()
   printf ("%d pairs.\n", npairs);
 
   /* set up numbers of input/output words and reps for convenience */
-  ninprep[L1INPMOD] = noutrep[L1INPMOD] = nl1rep;
-  ninprep[L1OUTMOD] = noutrep[L1OUTMOD] = nl1rep;
-  ninprep[L2INPMOD] = noutrep[L2INPMOD] = nl2rep;
-  ninprep[L2OUTMOD] = noutrep[L2OUTMOD] = nl2rep;
+  ninprep[L1LEXINPMOD] = noutrep[L1LEXINPMOD] = nl1lexrep;
+  ninprep[L1LEXOUTMOD] = noutrep[L1LEXOUTMOD] = nl1lexrep;
+  ninprep[L1PHONOLINPMOD] = noutrep[L1PHONOLINPMOD] = nl1phonolrep;
+  ninprep[L1PHONOLOUTMOD] = noutrep[L1PHONOLOUTMOD] = nl1phonolrep;
+  ninprep[L1PHONETICINPMOD] = noutrep[L1PHONETICINPMOD] = nl1phoneticrep;
+  ninprep[L1PHONETICOUTMOD] = noutrep[L1PHONETICOUTMOD] = nl1phoneticrep;
+  ninprep[L2LEXINPMOD] = noutrep[L2LEXINPMOD] = nl2lexrep;
+  ninprep[L2LEXOUTMOD] = noutrep[L2LEXOUTMOD] = nl2lexrep;
+  ninprep[L2PHONOLINPMOD] = noutrep[L2PHONOLINPMOD] = nl2phonolrep;
+  ninprep[L2PHONOLOUTMOD] = noutrep[L2PHONOLOUTMOD] = nl2phonolrep;
+  ninprep[L2PHONETICINPMOD] = noutrep[L2PHONETICINPMOD] = nl2phoneticrep;
+  ninprep[L2PHONETICOUTMOD] = noutrep[L2PHONETICOUTMOD] = nl2phoneticrep;
   ninprep[SINPMOD] = noutrep[SINPMOD] = nsrep;
   ninprep[SOUTMOD] = noutrep[SOUTMOD] = nsrep;
 

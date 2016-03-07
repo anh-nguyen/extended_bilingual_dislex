@@ -152,7 +152,7 @@ print_stats (epoch)
   for (modi = 0; modi < NMODULES; modi++)
     {
       /* first set the dimensions properly (lexical or semantic) */
-      nwords = (modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1INPMOD || modi == L1OUTMOD) ? nl1words : nl2words);
+      nwords = (modi == SINPMOD || modi == SOUTMOD) ? nswords : ((modi == L1LEXINPMOD || modi == L1LEXOUTMOD || modi == L1PHONOLINPMOD || modi == L1PHONOLOUTMOD || modi == L1PHONETICINPMOD || modi == L1PHONETICOUTMOD) ? nl1words : nl2words);
       nrep = (modi == SINPMOD || modi == SOUTMOD) ? nsrep : ((modi == L1INPMOD || modi == L1OUTMOD) ? nl1rep : nl2rep);
       sum_corr = sum_all = sum_corrinst = sum_allinst = 0;
       /* sum up all word counts and all correct word counts */
