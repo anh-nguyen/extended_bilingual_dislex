@@ -1,25 +1,3 @@
-#
-# input-pairs: the input word pair file.
-#
-# This file contains the pairs of lexical and semantic words that
-#  are used to train DISLEX. Give each pair in one line, with the
-#  lexical symbol first and semantic label second. 
-# The convention is to show symbols in upper case (because the 
-#  representations were taken from uppercase letters), but the program 
-#  itself is not case sensitive.
-# If you want to train one of the maps with extra symbols without at the
-#  same time training the other map or the associative connections, 
-#  use the symbol "_" (underscore) to indicate that no input should
-#  be presented to that map.
-# Begin with the keyword symbol-concept-pairs. Do not put any comments
-#  or other junk below it.
-#
-
-# Spanish: L1 		Eng: L2
-
-# Format: L1_Phonetic    L2_Phonetic    L1_Phonol    L2_Phonol    L1_Lex    L2_Lex    Semantic
-
-symbol-concept-pairs
 "kama	bEd	"kama	bEd	cama	bed	bed
 "a4Bol	tri	"a4Bol	tri	Árbol	tree	tree
 "lapiT	"pEns@l	"lapiT	"pEns@l	lápiz	pencil	pencil
