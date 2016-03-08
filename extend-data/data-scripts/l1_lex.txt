@@ -1,23 +1,3 @@
-#
-# the lexical representations
-#
-# This file contains the phonetic word labels and representations.
-# After the keyword "instances", first give the list of word instance labels
-#  all in one line. If there are no instances, just give the keyword.
-#  Separate statistics will be collected for the words declared as instances.
-instances
-#
-# Next give the number of components in the word representations.
-nwordrep 18
-#
-# After the keyword "word-representations" give the definitions one per line,
-#  each beginning with the label and followed by the representation components.
-# For DISLEX, the order of words does not have to match the order in sreps.
-# If there are any internal symbols (that do not have lexical counterparts)
-#  they should probably be removed so that they won't mess up the map.
-# Do not put any comments or other junk inside the representation definitions.
-#
-word-representations
 cama	4 2 14 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 árbol	100 66 19 3 16 13 0 0 0 0 0 0 0 0 0 0 0 0
 lápiz	13 100 66 17 10 27 0 0 0 0 0 0 0 0 0 0 0 0
@@ -78,4 +58,3 @@ enrejado	6 15 19 6 11 2 5 16 0 0 0 0 0 0 0 0 0 0
 paleta	17 2 13 6 21 2 0 0 0 0 0 0 0 0 0 0 0 0
 transportador	21 19 2 15 20 17 16 19 21 2 5 16 19 0 0 0 0 0
 ábaco	100 66 3 2 4 16 0 0 0 0 0 0 0 0 0 0 0 0
-
