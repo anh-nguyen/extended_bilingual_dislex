@@ -7,13 +7,13 @@ ti"xe4as
 "peine
 flo4
 se"rutSo
-Te"piLo De "Djentes
+Te"piLo_De_"Djentes
 eli"kopte4o
 es"koBa
 "pulpo
 "seta
 "pe4tSa
-"siLa De "rweDas
+"siLa_De_"rweDas
 ka"meLo
 "maska4a
 p4et"Tel
@@ -21,7 +21,7 @@ p4et"Tel
 ra"keta
 ka4a"kol
 bol"kan
-ka"BaLo De ma4
+ka"BaLo_De_ma4
 "da4Do
 ka"noa
 g"loBo
@@ -34,7 +34,7 @@ i"Glu
 "TaNkos
 domi"no
 "kaktus
-eska"le4a me"kanika
+eska"le4a_me"kanika
 "a4pa
 a"maka
 al"daBa
