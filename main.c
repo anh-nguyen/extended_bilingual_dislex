@@ -187,6 +187,11 @@ static int
 /* define the geometry of the display */
 static String fallback_resources[] =
 {
+  "*scrollbar.fromVert:   runstop",
+  "*scrollbar.left:   ChainLeft",
+  "*scrollbar.right:  ChainLeft",
+  "*scrollbar.top:  ChainTop",
+  "*scrollbar.bottom: ChainTop",
   "*runstop.left: 	ChainLeft",
   "*runstop.right: 	ChainLeft",
   "*runstop.top:	ChainTop",
@@ -218,13 +223,13 @@ static String fallback_resources[] =
   "*sem.bottom: ChainTop",
   "*l1lex.fromVert: sem",
   "*l1lex.left: ChainLeft",
-  "*l1lex.right: ChainRight",
+  "*l1lex.right: ChainLeft",
   "*l1lex.top: ChainTop",
   "*l1lex.bottom: ChainTop",
-  "*l2lex.fromVert: sem",
-  "*l2lex.fromHoriz: l1lex",
-  "*l2lex.left: ChainLeft",
-  "*l2lex.right: ChainLeft",
+  "*l2lex.fromVert: runstop",
+  "*l2lex.fromHoriz: sem",
+  "*l2lex.left: ChainRight",
+  "*l2lex.right: ChainRight",
   "*l2lex.top: ChainTop",
   "*l2lex.bottom: ChainTop",
   "*l1phonol.fromVert: l1lex", 
@@ -234,8 +239,8 @@ static String fallback_resources[] =
   "*l1phonol.bottom: ChainTop",
   "*l2phonol.fromVert: l2lex", 
   "*l2phonol.fromHoriz:	l1phonol",
-  "*l2phonol.left: ChainLeft",
-  "*l2phonol.right: ChainLeft",
+  "*l2phonol.left: ChainRight",
+  "*l2phonol.right: ChainRight",
   "*l2phonol.top: ChainTop",
   "*l2phonol.bottom: ChainTop",
   "*l1phonetic.fromVert:  l1phonol",
@@ -251,7 +256,7 @@ static String fallback_resources[] =
   "*l2phonetic.bottom: ChainTop",
 
   /* define the color defaults */
-  "*foreground:	        white",
+  "*foreground:	  white",
   "*background:		black",
   "*borderColor:	white",
 

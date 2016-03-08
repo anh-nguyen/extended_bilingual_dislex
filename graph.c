@@ -21,6 +21,7 @@
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Command.h>
 #include <X11/Xaw/Toggle.h>
+#include <X11/Xaw/Scrollbar.h>
 #include <X11/Xaw/AsciiText.h>
 
 #include "defs.h"
@@ -127,6 +128,7 @@ static int actual_color_range;	/* number of colors in use */
 static Widget
   runstop, step, clear, quit,	/* buttons */
   command,			/* command input widget */
+  scrollbar,
   l1lex, l2lex, /* network graphics widgets */
   l1phonol, l2phonol, 
   l1phonetic, l2phonetic, 
@@ -196,7 +198,6 @@ display_init ()
   /* create a form with no space between widgets */
   XtSetArg (args[0], XtNdefaultDistance, 0);
   form = XtCreateManagedWidget ("form", formWidgetClass, main_widget, args, 1);
-
   /* the command button for running and stopping the simulation */
   runstop = XtCreateManagedWidget ("runstop", commandWidgetClass,
 				   form, args, 1);
@@ -251,6 +252,8 @@ display_init ()
   XtSetArg (args[1], XtNheight, data.l2netheight);
   l2phonetic = XtCreateManagedWidget ("l2phonetic", gwinWidgetClass, form, args, 2);
 
+  scrollbar = XtCreateManagedWidget("scrollbar", scrollbarWidgetClass, main_widget, args, 1);
+
   /* callbacks: what to do when a button is pressed */
   XtAddCallback (runstop, XtNcallback, runstop_callback, NULL);
   XtAddCallback (step, XtNcallback, toggle_callback, NULL);
@@ -258,24 +261,25 @@ display_init ()
   XtAddCallback (quit, XtNcallback, quit_callback, NULL);
 
   /* network callbacks: redrawing the state */
-  XtAddCallback (l1phonetic, XtNexposeCallback, expose_lex, l1phoneticunits);
-  XtAddCallback (l2phonetic, XtNexposeCallback, expose_lex, l2phoneticunits);
-  XtAddCallback (l1phonol, XtNexposeCallback, expose_lex, l1phonolunits);
-  XtAddCallback (l2phonol, XtNexposeCallback, expose_lex, l2phonolunits);
+  XtAddCallback (sem, XtNexposeCallback, expose_lex, sunits);
   XtAddCallback (l1lex, XtNexposeCallback, expose_lex, l1lexunits);
   XtAddCallback (l2lex, XtNexposeCallback, expose_lex, l2lexunits);
-  XtAddCallback (sem, XtNexposeCallback, expose_lex, sunits);
-
+  XtAddCallback (l1phonol, XtNexposeCallback, expose_lex, l1phonolunits);
+  XtAddCallback (l2phonol, XtNexposeCallback, expose_lex, l2phonolunits);
+  XtAddCallback (l1phonetic, XtNexposeCallback, expose_lex, l1phoneticunits);
+  XtAddCallback (l2phonetic, XtNexposeCallback, expose_lex, l2phoneticunits);
   /* network callbacks for resizing */
-  XtAddCallback (l1phonetic, XtNresizeCallback, resize_lex, NULL);
-  XtAddCallback (l2phonetic, XtNresizeCallback, resize_lex, NULL);
-  XtAddCallback (l1phonol, XtNresizeCallback, resize_lex, NULL);
-  XtAddCallback (l2phonol, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (sem, XtNresizeCallback, resize_lex, NULL);
   XtAddCallback (l1lex, XtNresizeCallback, resize_lex, NULL);
   XtAddCallback (l2lex, XtNresizeCallback, resize_lex, NULL);
-  XtAddCallback (sem, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l1phonol, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l2phonol, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l1phonetic, XtNresizeCallback, resize_lex, NULL);
+  XtAddCallback (l2phonetic, XtNresizeCallback, resize_lex, NULL);
 
   /* network event handlers for mouse clicks */
+  XtAddEventHandler (sem, ButtonPressMask, FALSE,
+         (XtEventHandler) lexsemmouse_handler, NULL);
   XtAddEventHandler (l1lex, ButtonPressMask, FALSE,
 		     (XtEventHandler) lexsemmouse_handler, NULL);
   XtAddEventHandler (l2lex, ButtonPressMask, FALSE,
@@ -288,8 +292,6 @@ display_init ()
          (XtEventHandler) lexsemmouse_handler, NULL);
   XtAddEventHandler (l2phonetic, ButtonPressMask, FALSE,
          (XtEventHandler) lexsemmouse_handler, NULL);
-  XtAddEventHandler (sem, ButtonPressMask, FALSE,
-		     (XtEventHandler) lexsemmouse_handler, NULL);
 
   /* figure out the display type and allocate colors */
   create_colormap ();
@@ -300,13 +302,13 @@ display_init ()
   commandWin = XtWindow (command);
 
   /* get the lexicon windows */
+  Win[SEMWINMOD] = XtWindow (sem);  /* get a pointer to the window */
   Win[L1LEXWINMOD] = XtWindow (l1lex);  /* get a pointer to the window */
   Win[L2LEXWINMOD] = XtWindow (l2lex);  /* get a pointer to the window */
-  Win[L1PHONETICWINMOD] = XtWindow (l1phonetic);	/* get a pointer to the window */
-  Win[L2PHONETICWINMOD] = XtWindow (l2phonetic);  /* get a pointer to the window */
   Win[L1PHONOLWINMOD] = XtWindow (l1phonol);  /* get a pointer to the window */
   Win[L2PHONOLWINMOD] = XtWindow (l2phonol);  /* get a pointer to the window */
-  Win[SEMWINMOD] = XtWindow (sem);	/* get a pointer to the window */
+  Win[L1PHONETICWINMOD] = XtWindow (l1phonetic);	/* get a pointer to the window */
+  Win[L2PHONETICWINMOD] = XtWindow (l2phonetic);  /* get a pointer to the window */
 
   /* set a common font for all buttons and command line */
   XtSetArg (args[0], XtNfont, loadFont (data.commandfont));
@@ -358,13 +360,13 @@ display_init ()
   createGC (theMain, &activityGC, logfontStruct->fid, theBGpix, theBGpix);
 
   /* calculate all network geometries and put them on screen */
-  resize_lex (l1phonetic, NULL, NULL);
-  resize_lex (l2phonetic, NULL, NULL);  
-  resize_lex (l1phonol, NULL, NULL);
-  resize_lex (l2phonol, NULL, NULL); 
+  resize_lex (sem, NULL, NULL);
   resize_lex (l1lex, NULL, NULL);
   resize_lex (l2lex, NULL, NULL);
-  resize_lex (sem, NULL, NULL);
+  resize_lex (l1phonol, NULL, NULL);
+  resize_lex (l2phonol, NULL, NULL); 
+  resize_lex (l1phonetic, NULL, NULL);
+  resize_lex (l2phonetic, NULL, NULL);  
 
   printf ("Graphics initialization complete.\n");
 }
