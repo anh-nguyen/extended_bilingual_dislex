@@ -17,7 +17,7 @@ def make_input_pairs (l1_lex_file, l2_lex_file, l1_phone_file, l2_phone_file, se
 		l1_phone = l1_phone_f.readline().split(" ", 2)[0]
 		l2_phone = l2_phone_f.readline().split(" ", 2)[0]
 		sem_word = sem.readline().split(" ", 2)[0]
-		result.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(l1_phone, l2_phone, l1_phone, l2_phone, l1_lex, l2_lex, sem_word))
+		result.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(l1_phone, l2_phone, l1_phone.translate(None, "\"\'"), l2_phone.translate(None, "\"\'"), l1_lex, l2_lex, sem_word))
 
 
 	l1_lex_f.close()
