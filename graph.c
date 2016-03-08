@@ -130,7 +130,7 @@ static Widget
   l1lex, l2lex, /* network graphics widgets */
   l1phonol, l2phonol, 
   l1phonetic, l2phonetic, 
-  sem;			
+  sem;		
 
 /* useful pointers to windows */
 static Window
@@ -236,20 +236,20 @@ display_init ()
   /* create the lex network displays */
   /* get the size from resourses */
   XtSetArg (args[0], XtNwidth, data.netwidth);
+  XtSetArg (args[1], XtNheight, data.semnetheight);
+  sem = XtCreateManagedWidget ("sem", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l1netheight);
-  l1phonetic = XtCreateManagedWidget ("l1phonetic", gwinWidgetClass, form, args, 2);
+  l1lex = XtCreateManagedWidget ("l1lex", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l2netheight);
-  l2phonetic = XtCreateManagedWidget ("l2phonetic", gwinWidgetClass, form, args, 2);
+  l2lex = XtCreateManagedWidget ("l2lex", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l1netheight);
   l1phonol = XtCreateManagedWidget ("l1phonol", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l2netheight);
   l2phonol = XtCreateManagedWidget ("l2phonol", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l1netheight);
-  l1lex = XtCreateManagedWidget ("l1lex", gwinWidgetClass, form, args, 2);
+  l1phonetic = XtCreateManagedWidget ("l1phonetic", gwinWidgetClass, form, args, 2);
   XtSetArg (args[1], XtNheight, data.l2netheight);
-  l2lex = XtCreateManagedWidget ("l2lex", gwinWidgetClass, form, args, 2);
-  XtSetArg (args[1], XtNheight, data.semnetheight);
-  sem = XtCreateManagedWidget ("sem", gwinWidgetClass, form, args, 2);
+  l2phonetic = XtCreateManagedWidget ("l2phonetic", gwinWidgetClass, form, args, 2);
 
   /* callbacks: what to do when a button is pressed */
   XtAddCallback (runstop, XtNcallback, runstop_callback, NULL);
@@ -300,6 +300,8 @@ display_init ()
   commandWin = XtWindow (command);
 
   /* get the lexicon windows */
+  Win[L1LEXWINMOD] = XtWindow (l1lex);  /* get a pointer to the window */
+  Win[L2LEXWINMOD] = XtWindow (l2lex);  /* get a pointer to the window */
   Win[L1PHONETICWINMOD] = XtWindow (l1phonetic);	/* get a pointer to the window */
   Win[L2PHONETICWINMOD] = XtWindow (l2phonetic);  /* get a pointer to the window */
   Win[L1PHONOLWINMOD] = XtWindow (l1phonol);  /* get a pointer to the window */
@@ -359,7 +361,9 @@ display_init ()
   resize_lex (l1phonetic, NULL, NULL);
   resize_lex (l2phonetic, NULL, NULL);  
   resize_lex (l1phonol, NULL, NULL);
-  resize_lex (l2phonol, NULL, NULL);
+  resize_lex (l2phonol, NULL, NULL); 
+  resize_lex (l1lex, NULL, NULL);
+  resize_lex (l2lex, NULL, NULL);
   resize_lex (sem, NULL, NULL);
 
   printf ("Graphics initialization complete.\n");
@@ -483,6 +487,21 @@ static void
 clear_networks_display ()
   /* clear the network activations, labels, logs, and the display */
 {
+
+  /* clear the L1 lex map and its display */
+  clear_values (l1lexunits, nl1net);
+  clear_prevvalues (l1lexunits, nl1net);
+  clear_labels (l1lexunits, nl1net);
+  sprintf (net[L1LEXWINMOD].log, "%s", "");
+  XClearArea (theDisplay, Win[L1LEXWINMOD], 0, 0, 0, 0, True);
+
+  /* clear the L2 lex map and its display */
+  clear_values (l2lexunits, nl2net);
+  clear_prevvalues (l2lexunits, nl2net);
+  clear_labels (l2lexunits, nl2net);
+  sprintf (net[L2LEXWINMOD].log, "%s", "");
+  XClearArea (theDisplay, Win[L2LEXWINMOD], 0, 0, 0, 0, True);
+
   /* clear the L1 phonetic map and its display */
   clear_values (l1phoneticunits, nl1net);
   clear_prevvalues (l1phoneticunits, nl1net);

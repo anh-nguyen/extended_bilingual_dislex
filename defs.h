@@ -30,7 +30,7 @@
 #define MAXSTRL 2000		/* max length of input lines (chars) */
 
 /* system constants (not maxsize but actual size) */
-#define NMODULES 6		/* lex and sem output and input */
+#define NMODULES 14		/* lex and sem output and input */
 
 /*********** module, parameter, return, and range constants *************/
 

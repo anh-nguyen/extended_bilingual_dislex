@@ -11,12 +11,12 @@
 inputfile extended-input-pairs
 
 # names of the lexical and semantic representation files
-l1phoneticrepfile extended-l1-phonetic-reps
-l2phoneticrepfile extended-l2-phonetic-reps
-l1phonolrepfile extended-l1-phonol-reps
-l2phonolrepfile extended-l2-phonol-reps
 l1lexrepfile extended-l1-lex-reps
 l2lexrepfile extended-l2-lex-reps
+l1phonolrepfile extended-l1-phonol-reps
+l2phonolrepfile extended-l2-phonol-reps
+l1phoneticrepfile extended-l1-phonetic-reps
+l2phoneticrepfile extended-l2-phonetic-reps
 srepfile extended-sreps
 
 # sizes (sides) of the lexical and semantic maps

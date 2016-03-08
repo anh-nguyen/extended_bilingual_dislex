@@ -211,13 +211,44 @@ static String fallback_resources[] =
   "*command.right: 	ChainRight",
   "*command.top:	ChainTop",
   "*command.bottom:	ChainTop",
-  "*sem.fromVert: runstop",
+  "*sem.fromVert: command",
+  "*sem.left: ChainLeft",
+  "*sem.right: ChainRight",
+  "*sem.top: ChainTop",
+  "*sem.bottom: ChainTop",
   "*l1lex.fromVert: sem",
+  "*l1lex.left: ChainLeft",
+  "*l1lex.right: ChainRight",
+  "*l1lex.top: ChainTop",
+  "*l1lex.bottom: ChainTop",
+  "*l2lex.fromVert: sem",
   "*l2lex.fromHoriz: l1lex",
-  "*l1phonol.fromVert: 	l1lex", 
+  "*l2lex.left: ChainLeft",
+  "*l2lex.right: ChainLeft",
+  "*l2lex.top: ChainTop",
+  "*l2lex.bottom: ChainTop",
+  "*l1phonol.fromVert: l1lex", 
+  "*l1phonol.left: ChainLeft",
+  "*l1phonol.right: ChainLeft",
+  "*l1phonol.top: ChainTop",
+  "*l1phonol.bottom: ChainTop",
+  "*l2phonol.fromVert: l2lex", 
   "*l2phonol.fromHoriz:	l1phonol",
+  "*l2phonol.left: ChainLeft",
+  "*l2phonol.right: ChainLeft",
+  "*l2phonol.top: ChainTop",
+  "*l2phonol.bottom: ChainTop",
   "*l1phonetic.fromVert:  l1phonol",
-  "*l2phonetic.fromHoriz: 	l1phonetic",
+  "*l1phonetic.left: ChainLeft",
+  "*l1phonetic.right: ChainLeft",
+  "*l1phonetic.top: ChainTop",
+  "*l1phonetic.bottom: ChainTop",
+  "*l2phonetic.fromVert: l2phonol",
+  "*l2phonetic.fromHoriz: l1phonetic",
+  "*l2phonetic.left: ChainLeft",
+  "*l2phonetic.right: ChainLeft",
+  "*l2phonetic.top: ChainTop",
+  "*l2phonetic.bottom: ChainTop",
 
   /* define the color defaults */
   "*foreground:	        white",
@@ -820,17 +851,17 @@ read_params (fp)
   read_till_keyword (fp, SIMU_L1LEXREPFILE, REQUIRED);
   fscanf (fp, "%s", l1lexrepfile);
 
-  read_till_keyword (fp, SIMU_L1PHONOLREPFILE, REQUIRED);
-  fscanf (fp, "%s", l1phonolrepfile);
-
-  read_till_keyword (fp, SIMU_L1PHONETICREPFILE, REQUIRED);
-  fscanf (fp, "%s", l1phoneticrepfile);
-
   read_till_keyword (fp, SIMU_L2LEXREPFILE, REQUIRED);
   fscanf (fp, "%s", l2lexrepfile);
 
+  read_till_keyword (fp, SIMU_L1PHONOLREPFILE, REQUIRED);
+  fscanf (fp, "%s", l1phonolrepfile);
+
   read_till_keyword (fp, SIMU_L2PHONOLREPFILE, REQUIRED);
   fscanf (fp, "%s", l2phonolrepfile);
+
+  read_till_keyword (fp, SIMU_L1PHONETICREPFILE, REQUIRED);
+  fscanf (fp, "%s", l1phoneticrepfile);
 
   read_till_keyword (fp, SIMU_L2PHONETICREPFILE, REQUIRED);
   fscanf (fp, "%s", l2phoneticrepfile);
