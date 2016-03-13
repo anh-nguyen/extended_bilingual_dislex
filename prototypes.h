@@ -16,6 +16,8 @@
 /********* defined in main.c *************/
 int find_nearest __P((double rep[], WORDSTRUCT words[],
 		      int nrep, int nwords));
+void find_closest_unit __P ((int *i, int *j, int nnet, FMUNIT units[MAXLSNET][MAXLSNET], 
+				WORDSTRUCT words[], int word_index, int nrep));
 double distance __P((int *foo, double v1[], double v2[], int nrep));
 int select_lexicon __P ((int modi, WORDSTRUCT **words,
 			 int *nrep, int *nwords));
@@ -49,7 +51,7 @@ void init_stats __P((void));
 void collect_stats __P((int modi));
 void write_error __P((FILE *fp));
 void print_stats __P((int epoch));
-
+void print_assoc_stats __P((void));
 
 /********* defined in graph.c ***********/
 void display_init __P((void));

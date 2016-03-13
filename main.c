@@ -495,7 +495,8 @@ test_snapshot (epoch)
   get_current_params (epoch);	/* current learning rates and neighborhoods */
   init_stats ();
   iterate_pairs ();		/* run through the test set */
-  print_stats (epoch);		/* performance statistics */
+/* print_stats (epoch);		/* performance statistics - not used for bilingual DISLEX */ 
+  print_assoc_stats();
 }
 
 
@@ -1625,6 +1626,26 @@ find_nearest (rep, words, nrep, nwords)
   return (bestindex);
 }
 
+void 
+find_closest_unit(i, j, nnet, units, words, word_index, nrep)
+  int *i, *j;
+  int nnet, word_index, nrep;
+  FMUNIT units[MAXLSNET][MAXLSNET];
+  WORDSTRUCT words[];
+{
+  int u_i, u_j;
+  double current_distance = LARGEFLOAT;
+  for (u_i = 0; u_i < nnet; u_i++) {
+    for (u_j = 0; u_j < nnet; u_j++) {
+      double d = distance(NULL, words[word_index].rep, units[u_i][u_j].comp, nrep);
+      if (d < current_distance) {
+        *i = u_i;
+        *j = u_j;
+        current_distance = d;
+      }
+    }
+  }
+}
 
 double
 distance (foo, v1, v2, nrep)

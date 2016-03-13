@@ -199,6 +199,151 @@ print_stats (epoch)
 }
 
 
+void 
+print_assoc_stats()
+  /* mimics BNT -- only test for 60 word items */
+  /* test if correct units in L1 and L2 light up when a sem word is selected */
+{
+   int besti, bestj, label_index, pair_index, s_i, s_j, i, j,
+      l1_lex_i, l1_lex_j, l1_phonol_i, l1_phonol_j, l1_phonetic_i, l1_phonetic_j,
+      l2_lex_i, l2_lex_j, l2_phonol_i, l2_phonol_j, l2_phonetic_i, l2_phonetic_j,
+      l1_lex_index, l1_phonol_index, l1_phonetic_index,
+      l2_lex_index, l2_phonol_index, l2_phonetic_index,
+      s_index;
+   int l1_correct = 0;
+   int l2_correct = 0;
+   double best, foo; /* best and worst response found */
+
+   printf("Wrong words (sem -> lex -> phonol -> phonetic): \n");
+
+   /* for each unit with a label in the sem map, find the L1 and L2 units with max response */
+
+   for (s_index = 0; s_index < nswords; s_index++) {
+      find_closest_unit(&s_i, &s_j, nsnet, sunits, swords, s_index, nsrep);
+
+      /* find the pair containing the semantic word */
+      for (pair_index = 0; pair_index < npairs; pair_index++) {
+        if (pairs[pair_index].sindex == s_index) {
+          break;
+        }
+      }
+      
+      /* find index of best-matching l1 lex word */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl1net; i++)
+        for (j = 0; j < nl1net; j++)
+          {
+            l1lexunits[i][j].prevvalue = l1lexunits[i][j].value;
+            l1lexunits[i][j].value = sl1lexassoc[s_i][s_j][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l1lexunits[i][j],
+                 i, j, fgreater, fsmaller);
+          }
+      l1_lex_i = besti;
+      l1_lex_j = bestj;
+      l1_lex_index = find_nearest (l1lexunits[besti][bestj].comp, l1lexwords, nl1lexrep, nl1words);
+
+      /* find index of best-matching l1 phonol word */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl1net; i++)
+        for (j = 0; j < nl1net; j++)
+          {
+            l1phonolunits[i][j].prevvalue = l1phonolunits[i][j].value;
+            l1phonolunits[i][j].value = l1lexphonolassoc[l1_lex_i][l1_lex_j][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l1phonolunits[i][j],
+                 i, j, fgreater, fsmaller);
+          }
+      l1_phonol_i = besti;
+      l1_phonol_j = bestj;      
+      l1_phonol_index = find_nearest (l1phonolunits[besti][bestj].comp, l1phonolwords, nl1phonolrep, nl1words);
+
+
+      /* find index of best-matching l1 phonetic word */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl1net; i++)
+        for (j = 0; j < nl1net; j++)
+          {
+            l1phoneticunits[i][j].prevvalue = l1phoneticunits[i][j].value;
+            l1phoneticunits[i][j].value = l1phonolphoneticassoc[l1_phonol_i][l1_phonol_j][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l1phoneticunits[i][j],
+                 i, j, fgreater, fsmaller);
+          }
+      l1_phonetic_i = besti;
+      l1_phonetic_j = bestj;     
+      l1_phonetic_index = find_nearest (l1phoneticunits[besti][bestj].comp, l1phoneticwords, nl1phoneticrep, nl1words);
+
+
+      
+      /* find index of best-matching l2 lex word */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl2net; i++)
+        for (j = 0; j < nl2net; j++)
+          {
+            l2lexunits[i][j].prevvalue = l2lexunits[i][j].value;
+            l2lexunits[i][j].value = sl2lexassoc[s_i][s_j][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l2lexunits[i][j],
+                 i, j, fgreater, fsmaller);
+          }
+      l2_lex_i = besti;
+      l2_lex_j = bestj;
+      l2_lex_index = find_nearest (l2lexunits[besti][bestj].comp, l2lexwords, nl2lexrep, nl2words);
+
+      /* find index of best-matching l2 phonol word */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl2net; i++)
+        for (j = 0; j < nl2net; j++)
+          {
+            l2phonolunits[i][j].prevvalue = l2phonolunits[i][j].value;
+            l2phonolunits[i][j].value = l2lexphonolassoc[l2_lex_i][l2_lex_j][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l2phonolunits[i][j],
+                 i, j, fgreater, fsmaller);
+          }
+      l2_phonol_i = besti;
+      l2_phonol_j = bestj;      
+      l2_phonol_index = find_nearest (l2phonolunits[besti][bestj].comp, l2phonolwords, nl2phonolrep, nl2words);
+
+
+      /* find index of best-matching l2 phonetic word */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl2net; i++)
+        for (j = 0; j < nl2net; j++)
+          {
+            l2phoneticunits[i][j].prevvalue = l2phoneticunits[i][j].value;
+            l2phoneticunits[i][j].value = l2phonolphoneticassoc[l2_phonol_i][l2_phonol_j][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l2phoneticunits[i][j],
+                 i, j, fgreater, fsmaller);
+          }
+      l2_phonetic_i = besti;
+      l2_phonetic_j = bestj;     
+      l2_phonetic_index = find_nearest (l2phoneticunits[besti][bestj].comp, l2phoneticwords, nl2phoneticrep, nl2words);
+
+
+      if (l1_lex_index == pairs[pair_index].l1lexindex &&
+          l1_phonol_index == pairs[pair_index].l1phonolindex &&
+          l1_phonetic_index == pairs[pair_index].l1phoneticindex) {
+        l1_correct = l1_correct + 1;                 
+      } else {
+        printf("L1: %s\t%s\t%s\t%s\n", swords[s_index].chars, l1lexwords[l1_lex_index].chars, l1phonolwords[l1_phonol_index].chars, l1phoneticwords[l1_phonetic_index].chars);
+      }
+      if (l2_lex_index == pairs[pair_index].l2lexindex &&
+          l2_phonol_index == pairs[pair_index].l2phonolindex &&
+          l2_phonetic_index == pairs[pair_index].l2phoneticindex) {
+        l2_correct = l2_correct + 1;                 
+      } else {
+        printf("L2: %s\t%s\t%s\t%s\n", swords[s_index].chars, l2lexwords[l2_lex_index].chars, l2phonolwords[l2_phonol_index].chars, l2phoneticwords[l2_phonetic_index].chars);
+      }
+   }
+   printf("\nL1 correct: %d/%d (%.2f%%)\n", l1_correct, nl1words, 100.0 * (double) ((double)l1_correct/(double)nl1words));
+   printf("L2 correct: %d/%d (%.2f%%)\n", l2_correct, nl2words, 100.0 * (double) ((double)l2_correct/(double)nl2words));
+}
+
+
+
 static double
 reszero (num, den)
 /* if no data was collected, should print 0 instead of crashing */
