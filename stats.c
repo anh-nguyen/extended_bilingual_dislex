@@ -214,7 +214,7 @@ print_assoc_stats()
    int l2_correct = 0;
    double best, foo; /* best and worst response found */
 
-   printf("Wrong words (sem -> lex -> phonol -> phonetic): \n");
+   printf("Wrong words (sem -> lex -> phonol -> phonetic):\n");
 
    /* for each unit with a label in the sem map, find the L1 and L2 units with max response */
 
