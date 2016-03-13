@@ -510,10 +510,7 @@ training (epoch)
       init_stats ();
       if (shuffling)		/* change the order of stories */
 	shuffle ();
-      printf("before interate_pairs() \n");
       iterate_pairs ();		/* run through the training set */
-
-      printf("after interate_pairs() \n");
       /* log the progress of training error */
       printf ("Epoch %d errors: ", epoch);
       write_error (stdout);
