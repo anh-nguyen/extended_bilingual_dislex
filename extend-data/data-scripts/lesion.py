@@ -21,14 +21,15 @@ def lesion_assocs (patient_file, lesion_file, map_sizes, num_reps, noise_amount,
 		if "network-weights" in line:
 			break
 
-	assocs_start = line_num + (map_sizes["l1"]**2)*num_reps["l1"] + (map_sizes["l2"]**2)*num_reps["l2"] + (map_sizes["sem"]**2)*num_reps["sem"] + 1
+	assocs_start =  line_num + (map_sizes["l1"]**2)*num_reps["l1"] + (map_sizes["l2"]**2)*num_reps["l2"] + (map_sizes["sem"]**2)*num_reps["sem"] + 1
 
 	# order in the file: sl1 assocs, sl2 assocs, l1l2 assocs
 
-	sl1_start = assocs_start
-	sl2_start = sl1_start + (map_sizes["l1"]**2)*(map_sizes["sem"]**2)*2 + 1
-	l1l2_start = sl2_start + (map_sizes["l2"]**2)*(map_sizes["sem"]**2)*2 + 1
-	l1l2_inclusive_end = l1l2_start + (map_sizes["l1"]**2)*(map_sizes["l2"]**2)*2
+	sl1lex_start = assocs_start
+	sl2lex_start = _________________
+	l1lexphonol_start = ________
+	l2lexphonol_start = ____________
+	l2lexphonol_inclusive_end = 
 
 	# iterate until we reach assoc weights
 	for line in patient:	# starting from network-weights
@@ -47,6 +48,7 @@ def lesion_assocs (patient_file, lesion_file, map_sizes, num_reps, noise_amount,
 		if line_num == sl2_start - 1:
 			break
 
+	# add noise to sl2 weights
 	for line in patient:
 		line_num += 1
 		orig = float(line.strip())
@@ -56,25 +58,19 @@ def lesion_assocs (patient_file, lesion_file, map_sizes, num_reps, noise_amount,
 		if line_num == l1l2_start - 1:
 			break
 
-	for line in patient:
-		line_num += 1
-		orig = float(line.strip())
-		with_noise = orig + gauss(GAUSSIAN_MEAN, noise_amount["l1l2"])
-		with_noise = with_noise if with_noise > 0 else 0
-		lesioned.write("{:.6f}\n".format(with_noise))
-		if line_num == l1l2_inclusive_end:
-			break
+	# etc.
+
 
 if __name__ == "__main__":
 	map_sizes = {"l1": 20, "l2": 20, "sem": 20}
-	num_reps = {"l1": 208, "l2": 120, "sem": 81}
+	num_reps = {"l1phonetic": 208, "l2phonetic": 120, "l1lex": 18, "l2lex": 11, "l1phonol": 17, "l2phonol": 12, "sem": 81}
 
-	UTBA18_noise_amount = {'l1l2': 0, 'sl1': 0.32, 'sl2': 0.33}
-	BUBA01_noise_amount = {'l1l2': 0, 'sl1': 0, 'sl2': 0}
-	UTBA20_noise_amount = {'l1l2': 0, 'sl1': 0, 'sl2': 0}
-	UTBA21_noise_amount = {'l1l2': 0, 'sl1': 0, 'sl2': 0}
+	UTBA18_noise_amount = {'sl1lex': 0.32, 'sl2lex': 0.33, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
+	BUBA01_noise_amount = {'sl1lex': 0, 'sl2lex': 0, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
+	UTBA20_noise_amount = {'sl1lex': 0, 'sl2lex': 0, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
+	UTBA21_noise_amount = {'sl1lex': 0, 'sl2lex': 0, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
 
-	UTBA18_overwrite = True
+	UTBA18_overwrite = False
 	BUBA01_overwrite = False
 	UTBA20_overwrite = False
 	UTBA21_overwrite = False
