@@ -144,18 +144,15 @@ iterate_pairs()
       bool train_l1 = bool_with_prob(l1_exposure);
       bool train_l2 = bool_with_prob(l2_exposure);
       /* train semantic */
-      if (pairs[shuffletable[pairi]].sindex != NONE) {
-        if (sem_running) {
+      if (pairs[shuffletable[pairi]].sindex != NONE && sem_running) {
           present_input (SINPMOD, sunits, nsnet, swords,
              pairs[shuffletable[pairi]].sindex,
-             sprop, &nsprop, sem_nc)
+             sprop, &nsprop, sem_nc);
           modify_input_weights (SINPMOD, sunits, sem_alpha, sprop, nsprop);
-        }
       }
 
       /* train L1 if train_l1 */
-      if (pairs[shuffletable[pairi]].l1lexindex != NONE && train_l1) {
-        if (l1_running) {
+      if (pairs[shuffletable[pairi]].l1lexindex != NONE && train_l1 && l1_running) {
           present_input (L1LEXINPMOD, l1lexunits, nl1net, l1lexwords,
              pairs[shuffletable[pairi]].l1lexindex,
              l1lexprop, &nl1lexprop, l1_nc); 
@@ -169,12 +166,10 @@ iterate_pairs()
           modify_input_weights (L1LEXINPMOD, l1lexunits, l1_alpha, l1lexprop, nl1lexprop);
           modify_input_weights (L1PHONOLINPMOD, l1phonolunits, l1_alpha, l1phonolprop, nl1phonolprop);
           modify_input_weights (L1PHONETICINPMOD, l1phoneticunits, l1_alpha, l1phoneticprop, nl1phoneticprop);
-        }
       }
 
       /* train L2 if train_l2 */
-      if (pairs[shuffletable[pairi]].l2lexindex != NONE && train_l2) {
-        if (l2_running) {
+      if (pairs[shuffletable[pairi]].l2lexindex != NONE && train_l2 && l2_running) {
           present_input (L2LEXINPMOD, l2lexunits, nl2net, l2lexwords,
              pairs[shuffletable[pairi]].l2lexindex,
              l2lexprop, &nl2lexprop, l2_nc); 
@@ -188,10 +183,9 @@ iterate_pairs()
           modify_input_weights (L2LEXINPMOD, l2lexunits, l2_alpha, l2lexprop, nl2lexprop);
           modify_input_weights (L2PHONOLINPMOD, l2phonolunits, l2_alpha, l2phonolprop, nl2phonolprop);
           modify_input_weights (L2PHONETICINPMOD, l2phoneticunits, l2_alpha, l2phoneticprop, nl2phoneticprop);
-        }
       }
 
-      if (!train_l1) {
+      if (!train_l1 && l1_running) {
         /* train l1 lex with sem activation */
         best = (-1);
         worst = (-1);
@@ -207,6 +201,31 @@ iterate_pairs()
                 l1lexunits[i][j].value = l1lexunits[i][j].prevvalue;
               }
             }
+
+        if (train_l2) { /* add activation values from l2 as well */
+          /* l2 lex to l1 lex */
+          best = (-1);
+          worst = (-1);
+          for (i = 0; i < nl1net; i++)
+            for (j = 0; j < nl1net; j++) {
+              for (ii = 0; ii < nl2net; ii++) 
+                for (jj = 0; jj < nl2net; jj++) {
+                  l1lexunits[i][j].value += l2lexunits[ii][jj].value * l2l1lexassoc[ii][jj][i][j];
+                }
+              updatebestworst(&best, &worst, &besti, &bestj, &l1lexunits[i][j], i, j, fgreater, fsmaller);
+              l1lexunits[i][j].value = l1lexunits[i][j].prevvalue;
+              }
+        }
+
+        l1_lex_index = find_nearest(l1lexunits[besti][bestj].comp, l1lexwords, nl1lexrep, nl1words);
+        /* find the pair index with l1lexindex = l1_lex_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l1lexindex == l1_lex_index) {
+            l1_lex_pair = p;
+            break;
+          }
+        }
+
         /* train l1 phonol with lex activation */
         best = (-1);
         worst = (-1);
@@ -222,6 +241,32 @@ iterate_pairs()
                 l1phonolunits[i][j].value = l1phonolunits[i][j].prevvalue;
               }
             }
+
+        if (train_l2) { /* add activation values from l2 as well */
+          /* l2 phonol to l1 phonol */
+          best = (-1);
+          worst = (-1);
+          for (i = 0; i < nl1net; i++)
+            for (j = 0; j < nl1net; j++) {
+              for (ii = 0; ii < nl2net; ii++) 
+                for (jj = 0; jj < nl2net; jj++) {
+                  l1phonolunits[i][j].value += l2phonolunits[ii][jj].value * l2l1phonolassoc[ii][jj][i][j];
+                }
+              updatebestworst(&best, &worst, &besti, &bestj, &l1phonolunits[i][j], i, j, fgreater, fsmaller);
+              l1phonolunits[i][j].value = l1phonolunits[i][j].prevvalue;
+              }
+        }
+
+        l1_phonol_index = find_nearest(l1phonolunits[besti][bestj].comp, l1phonolwords, nl1phonolrep, nl1words);
+        /* find the pair index with l1phonolindex = l1_phonol_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l1phonolindex == l1_phonol_index) {
+            l1_phonol_pair = p;
+            break;
+          }
+        }
+
+
         /* train l1 phonetic with phonol activation */
         best = (-1);
         worst = (-1);
@@ -239,12 +284,32 @@ iterate_pairs()
             }
 
         if (train_l2) { /* add activation values from l2 as well */
+          /* l2 phonetic to l1 phonetic */
+          best = (-1);
+          worst = (-1);
+          for (i = 0; i < nl1net; i++)
+            for (j = 0; j < nl1net; j++) {
+              for (ii = 0; ii < nl2net; ii++) 
+                for (jj = 0; jj < nl2net; jj++) {
+                  l1phoneticunits[i][j].value += l2phoneticunits[ii][jj].value * l2l1phoneticassoc[ii][jj][i][j];
+                }
+              updatebestworst(&best, &worst, &besti, &bestj, &l1phoneticunits[i][j], i, j, fgreater, fsmaller);
+              l1phoneticunits[i][j].value = l1phoneticunits[i][j].prevvalue;
+              }
+        }
 
+        l1_phonetic_index = find_nearest(l1phoneticunits[besti][bestj].comp, l1phoneticwords, nl1phoneticrep, nl1words);
+        /* find the pair index with l1phoneticindex = l1_phonetic_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l1phoneticindex == l1_phonetic_index) {
+            l1_phonetic_pair = p;
+            break;
+          }
         }
       }
 
 
-      if (!train_l2) {
+      if (!train_l2 && l2_running) {
         /* train l2 lex with sem activation */
         best = (-1);
         worst = (-1);
@@ -260,6 +325,39 @@ iterate_pairs()
                 l2lexunits[i][j].value = l2lexunits[i][j].prevvalue;
               }
             }
+
+        if (train_l1) {
+          /* train L2 lex with activations from L1 lex */
+          best = (-1);
+          worst = (-1);
+          for (i = 0; i < nl2net; i++)
+            for (j = 0; j < nl2net; j++) {
+              for (ii = 0; ii < nl1net; ii++) 
+                for (jj = 0; jj < nl1net; jj++) {
+                  l2lexunits[i][j].value += l1lexunits[ii][jj].value * l1l2lexassoc[ii][jj][i][j];
+                }
+              updatebestworst(&best, &worst, &besti, &bestj, &l2lexunits[i][j], i, j, fgreater, fsmaller);
+              l2lexunits[i][j].value = l2lexunits[i][j].prevvalue;
+              }
+        }
+        l2_lex_index = find_nearest(l2lexunits[besti][bestj].comp, l2lexwords, nl2lexrep, nl2words);
+        
+        /* find the pair index with l2lexindex = l2_lex_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l2lexindex == l2_lex_index) {
+            l2_lex_pair = p;
+            break;
+          }
+        }
+        /* train l2 lex with this input */
+        if (pairs[shuffletable[l2_lex_pair]].l2lexindex != NONE)
+          {
+            present_input (L2LEXINPMOD, l2lexunits, nl2net, l2lexwords,
+               pairs[shuffletable[l2_lex_pair]].l2lexindex,
+               l2lexprop, &nl2lexprop, l2_nc);
+            modify_input_weights (L2LEXINPMOD, l2lexunits, l2_alpha, l2lexprop, nl2lexprop);
+          }
+
         /* train l2 phonol with lex activation */
         best = (-1);
         worst = (-1);
@@ -275,6 +373,41 @@ iterate_pairs()
                 l2phonolunits[i][j].value = l2phonolunits[i][j].prevvalue;
               }
             }
+
+        if (train_l1) {
+          /* train L2 phonol with activations from L1 phonol */
+          best = (-1);
+          worst = (-1);
+          for (i = 0; i < nl2net; i++)
+            for (j = 0; j < nl2net; j++) {
+              for (ii = 0; ii < nl1net; ii++) 
+                for (jj = 0; jj < nl1net; jj++) {
+                  l2phonolunits[i][j].value += l1phonolunits[ii][jj].value * l1l2phonolassoc[ii][jj][i][j];
+                }
+              updatebestworst(&best, &worst, &besti, &bestj, &l2phonolunits[i][j], i, j, fgreater, fsmaller);
+              l2phonolunits[i][j].value = l2phonolunits[i][j].prevvalue;
+              }
+        }
+        l2_phonol_index = find_nearest(l2phonolunits[besti][bestj].comp, l2phonolwords, nl2phonolrep, nl2words);
+        
+        /* find the pair index with l2phonolindex = l2_phonol_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l2phonolindex == l2_phonol_index) {
+            l2_phonol_pair = p;
+            break;
+          }
+        }
+        /* train l2 phonol with this input */
+        if (pairs[shuffletable[l2_phonol_pair]].l2phonolindex != NONE)
+          {
+            present_input (L2PHONOLINPMOD, l2phonolunits, nl2net, l2phonolwords,
+               pairs[shuffletable[l2_phonol_pair]].l2phonolindex,
+               l2phonolprop, &nl2phonolprop, l2_nc);
+            modify_input_weights (L2PHONOLINPMOD, l2phonolunits, l2_alpha, l2phonolprop, nl2phonolprop);
+          }
+
+
+
         /* train l2 phonetic with phonol activation */
         best = (-1);
         worst = (-1);
@@ -292,11 +425,68 @@ iterate_pairs()
             }
 
         if (train_l1) {
-
+          /* train L2 phonetic with activations from L1 phonetic */
+          best = (-1);
+          worst = (-1);
+          for (i = 0; i < nl2net; i++)
+            for (j = 0; j < nl2net; j++) {
+              for (ii = 0; ii < nl1net; ii++) 
+                for (jj = 0; jj < nl1net; jj++) {
+                  l2phoneticunits[i][j].value += l1phoneticunits[ii][jj].value * l1l2phoneticassoc[ii][jj][i][j];
+                }
+              updatebestworst(&best, &worst, &besti, &bestj, &l2phoneticunits[i][j], i, j, fgreater, fsmaller);
+              l2phoneticunits[i][j].value = l2phoneticunits[i][j].prevvalue;
+              }
         }
-
+        l2_phonetic_index = find_nearest(l2phoneticunits[besti][bestj].comp, l2phoneticwords, nl2phoneticrep, nl2words);
+        
+        /* find the pair index with l2phoneticindex = l2_phonetic_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l2phoneticindex == l2_phonetic_index) {
+            l2_phonetic_pair = p;
+            break;
+          }
+        }
+        /* train l2 phonetic with this input */
+        if (pairs[shuffletable[l2_phonetic_pair]].l2phoneticindex != NONE)
+          {
+            present_input (L2PHONETICINPMOD, l2phoneticunits, nl2net, l2phoneticwords,
+               pairs[shuffletable[l2_phonetic_pair]].l2phoneticindex,
+               l2phoneticprop, &nl2phoneticprop, l2_nc);
+            modify_input_weights (L2PHONETICINPMOD, l2phoneticunits, l2_alpha, l2phoneticprop, nl2phoneticprop);
+          }
       }
 
+      if (!train_l1 && l1_running) {
+        /* now we actually train l1 */
+
+        /* lex */
+        if (pairs[shuffletable[l1_lex_pair]].l1lexindex != NONE)
+          {
+            present_input (L1LEXINPMOD, l1lexunits, nl1net, l1lexwords,
+               pairs[shuffletable[l1_lex_pair]].l1lexindex,
+               l1lexprop, &nl1lexprop, l1_nc);
+            modify_input_weights (L1LEXINPMOD, l1lexunits, l1_alpha, l1lexprop, nl1lexprop);
+          }
+
+        /* phonol */
+        if (pairs[shuffletable[l1_phonol_pair]].l1phonolindex != NONE)
+          {
+            present_input (L1PHONOLINPMOD, l1phonolunits, nl1net, l1phonolwords,
+               pairs[shuffletable[l1_phonol_pair]].l1phonolindex,
+               l1phonolprop, &nl1phonolprop, l1_nc);
+            modify_input_weights (L1PHONOLINPMOD, l1phonolunits, l1_alpha, l1phonolprop, nl1phonolprop);
+          }
+
+        /* phonetic */
+        if (pairs[shuffletable[l1_phonetic_pair]].l1phoneticindex != NONE)
+          {
+            present_input (L1PHONETICINPMOD, l1phoneticunits, nl1net, l1phoneticwords,
+               pairs[shuffletable[l1_phonetic_pair]].l1phoneticindex,
+               l1phoneticprop, &nl1phoneticprop, l1_nc);
+            modify_input_weights (L1PHONETICINPMOD, l1phoneticunits, l1_alpha, l1phoneticprop, nl1phoneticprop);
+          }
+      }
 
       /* finally, update associations */
       /* l1 lex and sem */
@@ -471,460 +661,6 @@ iterate_pairs()
         }
     }
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void
-iterate_pairs ()
-/* iterate through all pairs; present to maps, propagate, change weights */
-{
-  /* propagation through these units */
-  LEXPROPUNIT l1lexprop[MAXLSNET * MAXLSNET],
-    l2lexprop[MAXLSNET * MAXLSNET],
-    l1phonolprop[MAXLSNET * MAXLSNET],
-    l2phonolprop[MAXLSNET * MAXLSNET],
-    l1phoneticprop[MAXLSNET * MAXLSNET],
-    l2phoneticprop[MAXLSNET * MAXLSNET],
-    sprop[MAXLSNET * MAXLSNET];
-  int pairi,				/* word pair counter */
-    nl1lexprop, nl1phonolprop, nl1phoneticprop,   /* lex and sem number of prop units */
-    nl2lexprop, nl2phonolprop, nl2phoneticprop, 
-    nsprop;			
-
-  /* first display the current labels and clean previous activations */
-  if (displaying)
-    {
-      if (l1_running || l1l2_assoc_running || sl1_assoc_running) {
-	init_lex_display (L1LEXWINMOD, nl1net, nl1words, l1lexwords, nl1lexrep, l1lexunits);
-  init_lex_display (L1PHONOLWINMOD, nl1net, nl1words, l1phonolwords, nl1phonolrep, l1phonolunits);
-  init_lex_display (L1PHONETICWINMOD, nl1net, nl1words, l1phoneticwords, nl1phoneticrep, l1phoneticunits);
-      }
-      if (l2_running || l1l2_assoc_running || sl2_assoc_running) {
-  init_lex_display (L2LEXWINMOD, nl2net, nl2words, l2lexwords, nl2lexrep, l2lexunits);
-  init_lex_display (L2PHONOLWINMOD, nl2net, nl2words, l2phonolwords, nl2phonolrep, l2phonolunits);
-  init_lex_display (L2PHONETICWINMOD, nl2net, nl2words, l2phoneticwords, nl2phoneticrep, l2phoneticunits); 
-      }
-      if (sem_running || sl1_assoc_running || sl2_assoc_running) {
-	init_lex_display (SEMWINMOD, nsnet, nswords, swords, nsrep, sunits);
-      }
-      /* stop if stepping, check for events */
-      wait_and_handle_events ();
-    }
-  
-  /* iterate through all word pairs */
-  for (pairi = 0; pairi < npairs; pairi++)
-    {
-      bool train_l1 = bool_with_prob(l1_exposure);
-      bool train_l2 = bool_with_prob(l2_exposure);
-      
-      /* first propagate from within L1 subcomponents to L2 and semantic */
-      if (pairs[shuffletable[pairi]].l1phoneticindex != NONE && 
-          pairs[shuffletable[pairi]].l1phonolindex != NONE && 
-          pairs[shuffletable[pairi]].l1lexindex != NONE && 
-          train_l1)
-	{
-	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running)) {
-	    present_input (L1LEXINPMOD, l1lexunits, nl1net, l1lexwords,
-			   pairs[shuffletable[pairi]].l1lexindex,
-			   l1lexprop, &nl1lexprop, l1_nc); 
-      present_input (L1PHONOLINPMOD, l1phonolunits, nl1net, l1phonolwords,
-         pairs[shuffletable[pairi]].l1phonolindex,
-         l1phonolprop, &nl1phonolprop, l1_nc); 
-      present_input (L1PHONETICINPMOD, l1phoneticunits, nl1net, l1phoneticwords,
-         pairs[shuffletable[pairi]].l1phoneticindex,
-         l1phoneticprop, &nl1phoneticprop, l1_nc); 
-    }
-
-    if (!testing && l1_running) {
-      modify_input_weights (L1LEXINPMOD, l1lexunits, l1_alpha, l1lexprop, nl1lexprop);
-      modify_input_weights (L1PHONOLINPMOD, l1phonolunits, l1_alpha, l1phonolprop, nl1phonolprop);
-      modify_input_weights (L1PHONETICINPMOD, l1phoneticunits, l1_alpha, l1phoneticprop, nl1phoneticprop);
-    }
-
-	  if (testing && sl1_assoc_running)
-	    associate (l1lexunits, SOUTMOD, sunits, nsnet, swords,
-		       pairs[shuffletable[pairi]].sindex,
-		       l1lexprop, nl1lexprop, l1lexsassoc);
-    if (testing && l1_running) {
-      /* lex to phonol */
-      associate(l1lexunits, L1PHONOLOUTMOD, l1phonolunits, nl1net, l1phonolwords,
-           pairs[shuffletable[pairi]].l1phonolindex,
-           l1lexprop, nl1lexprop, l1lexphonolassoc);
-      /* phonol to lex */
-      associate(l1phonolunits, L1LEXOUTMOD, l1lexunits, nl1net, l1lexwords,
-           pairs[shuffletable[pairi]].l1lexindex,
-           l1phonolprop, nl1phonolprop, l1phonollexassoc);
-      /* phonol to phonetic */
-      associate(l1phonolunits, L1PHONETICOUTMOD, l1phoneticunits, nl1net, l1phoneticwords,
-           pairs[shuffletable[pairi]].l1phoneticindex,
-           l1phonolprop, nl1phonolprop, l1phonolphoneticassoc);
-      /* phonetic to phonol */
-      associate(l1phoneticunits, L1PHONOLOUTMOD, l1phonolunits, nl1net, l1phonolwords,
-           pairs[shuffletable[pairi]].l1phonolindex,
-           l1phoneticprop, nl1phoneticprop, l1phoneticphonolassoc);
-    }
-    if (testing && l1l2_assoc_running) {
-      /* lex */
-      associate (l1lexunits, L2LEXOUTMOD, l2lexunits, nl2net, l2lexwords,
-           pairs[shuffletable[pairi]].l2lexindex,
-           l1lexprop, nl1lexprop, l1l2lexassoc);
-      /* phonol */
-      associate (l1phonolunits, L2PHONOLOUTMOD, l2phonolunits, nl2net, l2phonolwords,
-           pairs[shuffletable[pairi]].l2phonolindex,
-           l1phonolprop, nl1phonolprop, l1l2phonolassoc);
-      /* phonetic */
-      associate (l1phoneticunits, L2PHONETICOUTMOD, l2phoneticunits, nl2net, l2phoneticwords,
-           pairs[shuffletable[pairi]].l2phoneticindex,
-           l1phoneticprop, nl1phoneticprop, l1l2phoneticassoc);
-    }
-	  if (testing && displaying && (l1_running || l1l2_assoc_running || sl1_assoc_running))
-	    {	
-	      display_lex (L1LEXINPMOD, l1lexunits, nl1net);
-	      display_error (L1LEXINPMOD);
-        display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
-        display_error (L1PHONOLINPMOD);
-        display_lex (L1PHONETICINPMOD, l1phoneticunits, nl1net);
-        display_error (L1PHONETICINPMOD);
-
-	      if (sl1_assoc_running)
-		{
-		  display_lex (SOUTMOD, sunits, nsnet);
-		  display_error (SOUTMOD);
-		}
-        if (l1l2_assoc_running)
-    {
-        display_lex (L2LEXOUTMOD, l2lexunits, nl2net);
-        display_error (L2LEXOUTMOD);
-        display_lex (L2PHONOLOUTMOD, l2phonolunits, nl2net);
-        display_error (L2PHONOLOUTMOD);
-        display_lex (L2PHONETICOUTMOD, l2phoneticunits, nl2net);
-        display_error (L2PHONETICOUTMOD);
-
-    }
-	      wait_and_handle_events ();
-	    }
-	}
-
-        /* then propagate from L2 subcomponents to L1 and semantic */
-      if (pairs[shuffletable[pairi]].l2phoneticindex != NONE && 
-          pairs[shuffletable[pairi]].l2phonolindex != NONE && 
-          pairs[shuffletable[pairi]].l2lexindex != NONE && 
-          train_l2)
-  {
-    if ((l2_running || l1l2_assoc_running || sl2_assoc_running)) {
-      present_input (L2LEXINPMOD, l2lexunits, nl2net, l2lexwords,
-         pairs[shuffletable[pairi]].l2lexindex,
-         l2lexprop, &nl2lexprop, l2_nc); 
-      present_input (L2PHONOLINPMOD, l2phonolunits, nl2net, l2phonolwords,
-         pairs[shuffletable[pairi]].l2phonolindex,
-         l2phonolprop, &nl2phonolprop, l2_nc); 
-      present_input (L2PHONETICINPMOD, l2phoneticunits, nl2net, l2phoneticwords,
-         pairs[shuffletable[pairi]].l2phoneticindex,
-         l2phoneticprop, &nl2phoneticprop, l2_nc); 
-    }
-
-    if (!testing && l2_running) {
-      modify_input_weights (L2LEXINPMOD, l2lexunits, l2_alpha, l2lexprop, nl2lexprop);
-      modify_input_weights (L2PHONOLINPMOD, l2phonolunits, l2_alpha, l2phonolprop, nl2phonolprop);
-      modify_input_weights (L2PHONETICINPMOD, l2phoneticunits, l2_alpha, l2phoneticprop, nl2phoneticprop);
-    }
-
-    if (testing && sl2_assoc_running)
-      associate (l2lexunits, SOUTMOD, sunits, nsnet, swords,
-           pairs[shuffletable[pairi]].sindex,
-           l2lexprop, nl2lexprop, l2lexsassoc);
-    if (testing && l2_running) {
-      /* lex to phonol */
-      associate(l2lexunits, L2PHONOLOUTMOD, l2phonolunits, nl2net, l2phonolwords,
-           pairs[shuffletable[pairi]].l2phonolindex,
-           l2lexprop, nl2lexprop, l2lexphonolassoc);
-      /* phonol to lex */
-      associate(l2phonolunits, L2LEXOUTMOD, l2lexunits, nl2net, l2lexwords,
-           pairs[shuffletable[pairi]].l2lexindex,
-           l2phonolprop, nl2phonolprop, l2phonollexassoc);
-      /* phonol to phonetic */
-      associate(l2phonolunits, L2PHONETICOUTMOD, l2phoneticunits, nl2net, l2phoneticwords,
-           pairs[shuffletable[pairi]].l2phoneticindex,
-           l2phonolprop, nl2phonolprop, l2phonolphoneticassoc);
-      /* phonetic to phonol */
-      associate(l2phoneticunits, L2PHONOLOUTMOD, l2phonolunits, nl2net, l2phonolwords,
-           pairs[shuffletable[pairi]].l2phonolindex,
-           l2phoneticprop, nl2phoneticprop, l2phoneticphonolassoc);
-    }
-    if (testing && l1l2_assoc_running) {
-      /* lex */
-      associate (l2lexunits, L1LEXOUTMOD, l1lexunits, nl1net, l1lexwords,
-           pairs[shuffletable[pairi]].l1lexindex,
-           l2lexprop, nl2lexprop, l2l1lexassoc);
-      /* phonol */
-      associate (l2phonolunits, L1PHONOLOUTMOD, l1phonolunits, nl1net, l1phonolwords,
-           pairs[shuffletable[pairi]].l1phonolindex,
-           l2phonolprop, nl2phonolprop, l2l1phonolassoc);
-      /* phonetic */
-      associate (l2phoneticunits, L1PHONETICOUTMOD, l1phoneticunits, nl1net, l1phoneticwords,
-           pairs[shuffletable[pairi]].l1phoneticindex,
-           l2phoneticprop, nl2phoneticprop, l2l1phoneticassoc);
-    }
-    if (testing && displaying && (l2_running || l1l2_assoc_running || sl2_assoc_running))
-      { 
-        display_lex (L2LEXINPMOD, l2lexunits, nl2net);
-        display_error (L2LEXINPMOD);
-        display_lex (L2PHONOLINPMOD, l2phonolunits, nl2net);
-        display_error (L2PHONOLINPMOD);
-        display_lex (L2PHONETICINPMOD, l2phoneticunits, nl2net);
-        display_error (L2PHONETICINPMOD);
-
-        if (sl1_assoc_running)
-    {
-      display_lex (SOUTMOD, sunits, nsnet);
-      display_error (SOUTMOD);
-    }
-        if (l1l2_assoc_running)
-    {
-        display_lex (L1LEXOUTMOD, l1lexunits, nl1net);
-        display_error (L1LEXOUTMOD);
-        display_lex (L1PHONOLOUTMOD, l1phonolunits, nl1net);
-        display_error (L1PHONOLOUTMOD);
-        display_lex (L1PHONETICOUTMOD, l1phoneticunits, nl1net);
-        display_error (L1PHONETICOUTMOD);
-
-    }
-        wait_and_handle_events ();
-      }
-  } 
-  
-
-      /* then propagate from semantic to L1 and L2 */
-      if (pairs[shuffletable[pairi]].sindex != NONE)
-	{
-	  if (sem_running || sl1_assoc_running || sl2_assoc_running)
-	    present_input (SINPMOD, sunits, nsnet, swords,
-			   pairs[shuffletable[pairi]].sindex,
-			   sprop, &nsprop, sem_nc);
-	  if (!testing & sem_running)
-	    modify_input_weights (SINPMOD, sunits, sem_alpha, sprop, nsprop);
-	  if (testing && sl1_assoc_running)
-	    associate (sunits, L1LEXOUTMOD, l1lexunits, nl1net, l1lexwords,
-		       pairs[shuffletable[pairi]].l1lexindex,
-		       sprop, nsprop, sl1lexassoc);
-    if (testing && sl2_assoc_running)
-      associate (sunits, L2LEXOUTMOD, l2lexunits, nl2net, l2lexwords,
-           pairs[shuffletable[pairi]].l2lexindex,
-           sprop, nsprop, sl2lexassoc);
-	  if (testing && displaying && (sem_running || sl1_assoc_running || sl2_assoc_running))
-	    {
-	      display_lex (SINPMOD, sunits, nsnet);
-	      display_error (SINPMOD);
-	      if (sl1_assoc_running)
-		{
-		  display_lex (L1LEXOUTMOD, l1lexunits, nl1net);
-		  display_error (L1LEXOUTMOD);
-		}
-        if (sl2_assoc_running)
-    {
-      display_lex (L2LEXOUTMOD, l2lexunits, nl2net);
-      display_error (L2LEXOUTMOD);
-    }
-	      wait_and_handle_events ();
-	    }
-	}
-
-  /* finally, update associations */
-  /* l1 lex and sem */
-  if (!testing && sl1_assoc_running && train_l1 &&
-	  pairs[shuffletable[pairi]].l1lexindex != NONE &&
-	  pairs[shuffletable[pairi]].sindex != NONE)
-	{
-	  modify_assoc_weights (l1lexunits, sunits, l1lexprop, nl1lexprop, sprop, nsprop,
-				nsnet, l1lexsassoc, sl1_assoc_alpha);
-	  modify_assoc_weights (sunits, l1lexunits, sprop, nsprop, l1lexprop, nl1lexprop,
-				nl1net, sl1lexassoc, sl1_assoc_alpha);
-	  if (displaying)
-	    {	
-	      display_lex (L1LEXINPMOD, l1lexunits, nl1net);
-	      display_error (L1LEXINPMOD);
-	      display_lex (SINPMOD, sunits, nsnet);
-	      display_error (SINPMOD);
-	      wait_and_handle_events ();
-	    }
-	}
-
-  /* l1 lex and phonol */
-  if (!testing && l1_running && train_l1 &&
-    pairs[shuffletable[pairi]].l1lexindex != NONE &&
-    pairs[shuffletable[pairi]].l1phonolindex != NONE)
-  {
-    modify_assoc_weights (l1lexunits, l1phonolunits, l1lexprop, nl1lexprop, l1phonolprop, nl1phonolprop,
-        nl1net, l1lexphonolassoc, l1_alpha);
-    modify_assoc_weights (l1phonolunits, l1lexunits, l1phonolprop, nl1phonolprop, l1lexprop, nl1lexprop,
-        nl1net, l1phonollexassoc, l1_alpha);
-    if (displaying)
-      { 
-        display_lex (L1LEXINPMOD, l1lexunits, nl1net);
-        display_error (L1LEXINPMOD);
-        display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
-        display_error (L1PHONOLINPMOD);
-        wait_and_handle_events ();
-      }
-  }
-
-  /* l1 phonol and phonetic */
-  if (!testing && l1_running && train_l1 &&
-    pairs[shuffletable[pairi]].l1phonolindex != NONE &&
-    pairs[shuffletable[pairi]].l1phoneticindex != NONE)
-  {
-    modify_assoc_weights (l1phonolunits, l1phoneticunits, l1phonolprop, nl1phonolprop, l1phoneticprop, nl1phoneticprop,
-        nl1net, l1phonolphoneticassoc, l1_alpha);
-    modify_assoc_weights (l1phoneticunits, l1phonolunits, l1phoneticprop, nl1phoneticprop, l1phonolprop, nl1phonolprop,
-        nl1net, l1phoneticphonolassoc, l1_alpha);
-    if (displaying)
-      { 
-        display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
-        display_error (L1PHONOLINPMOD);
-        display_lex (L1PHONETICINPMOD, l1phonolunits, nl1net);
-        display_error (L1PHONETICINPMOD);
-        wait_and_handle_events ();
-      }
-  }
-
-  /* l2 lex and sem */
-  if (!testing && sl2_assoc_running && train_l2 &&
-    pairs[shuffletable[pairi]].l2lexindex != NONE &&
-    pairs[shuffletable[pairi]].sindex != NONE)
-  {
-    modify_assoc_weights (l2lexunits, sunits, l2lexprop, nl2lexprop, sprop, nsprop,
-        nsnet, l2lexsassoc, sl2_assoc_alpha);
-    modify_assoc_weights (sunits, l2lexunits, sprop, nsprop, l2lexprop, nl2lexprop,
-        nl2net, sl2lexassoc, sl2_assoc_alpha);
-    if (displaying)
-      { 
-        display_lex (L2LEXINPMOD, l2lexunits, nl2net);
-        display_error (L2LEXINPMOD);
-        display_lex (SINPMOD, sunits, nsnet);
-        display_error (SINPMOD);
-        wait_and_handle_events ();
-      }
-  }
-
-  /* l2 lex and phonol */
-  if (!testing && l2_running && train_l2 &&
-    pairs[shuffletable[pairi]].l2lexindex != NONE &&
-    pairs[shuffletable[pairi]].l2phonolindex != NONE)
-  {
-    modify_assoc_weights (l2lexunits, l2phonolunits, l2lexprop, nl2lexprop, l2phonolprop, nl2phonolprop,
-        nl2net, l2lexphonolassoc, l2_alpha);
-    modify_assoc_weights (l2phonolunits, l2lexunits, l2phonolprop, nl2phonolprop, l2lexprop, nl2lexprop,
-        nl2net, l2phonollexassoc, l2_alpha);
-    if (displaying)
-      { 
-        display_lex (L2LEXINPMOD, l2lexunits, nl2net);
-        display_error (L2LEXINPMOD);
-        display_lex (L2PHONOLINPMOD, l2phonolunits, nl2net);
-        display_error (L2PHONOLINPMOD);
-        wait_and_handle_events ();
-      }
-  }
-
-  /* l2 phonol and phonetic */
-  if (!testing && l2_running && train_l2 &&
-    pairs[shuffletable[pairi]].l2phonolindex != NONE &&
-    pairs[shuffletable[pairi]].l2phoneticindex != NONE)
-  {
-    modify_assoc_weights (l2phonolunits, l2phoneticunits, l2phonolprop, nl2phonolprop, l2phoneticprop, nl2phoneticprop,
-        nl2net, l2phonolphoneticassoc, l2_alpha);
-    modify_assoc_weights (l2phoneticunits, l2phonolunits, l2phoneticprop, nl2phoneticprop, l2phonolprop, nl2phonolprop,
-        nl2net, l2phoneticphonolassoc, l2_alpha);
-    if (displaying)
-      { 
-        display_lex (L2PHONOLINPMOD, l2phonolunits, nl2net);
-        display_error (L2PHONOLINPMOD);
-        display_lex (L2PHONETICINPMOD, l2phonolunits, nl2net);
-        display_error (L2PHONETICINPMOD);
-        wait_and_handle_events ();
-      }
-  }
-  
-  /* l1 lex and l2 lex */
-      if (!testing && l1l2_assoc_running && train_l1 && train_l2 &&
-    pairs[shuffletable[pairi]].l1lexindex != NONE &&
-    pairs[shuffletable[pairi]].l2lexindex != NONE)
-  {
-    modify_assoc_weights (l2lexunits, l1lexunits, l2lexprop, nl2lexprop, l1lexprop, nl1lexprop,
-        nl1net, l2l1lexassoc, l1l2_assoc_alpha);
-    modify_assoc_weights (l1lexunits, l2lexunits, l1lexprop, nl1lexprop, l2lexprop, nl2lexprop,
-        nl2net, l1l2lexassoc, l1l2_assoc_alpha);
-    if (displaying)
-      { 
-        display_lex (L2LEXINPMOD, l2lexunits, nl2net);
-        display_error (L2LEXINPMOD);
-        display_lex (L1LEXINPMOD, l1lexunits, nl1net);
-        display_error (L1LEXINPMOD);
-        wait_and_handle_events ();
-      }
-    }
-
-  /* l1 phonol and l2 phonol */
-      if (!testing && l1l2_assoc_running && train_l1 && train_l2 &&
-    pairs[shuffletable[pairi]].l1phonolindex != NONE &&
-    pairs[shuffletable[pairi]].l2phonolindex != NONE)
-  {
-    modify_assoc_weights (l2phonolunits, l1phonolunits, l2phonolprop, nl2phonolprop, l1phonolprop, nl1phonolprop,
-        nl1net, l2l1phonolassoc, l1l2_assoc_alpha);
-    modify_assoc_weights (l1phonolunits, l2phonolunits, l1phonolprop, nl1phonolprop, l2phonolprop, nl2phonolprop,
-        nl2net, l1l2phonolassoc, l1l2_assoc_alpha);
-    if (displaying)
-      { 
-        display_lex (L2PHONOLINPMOD, l2phonolunits, nl2net);
-        display_error (L2PHONOLINPMOD);
-        display_lex (L1PHONOLINPMOD, l1phonolunits, nl1net);
-        display_error (L1PHONOLINPMOD);
-        wait_and_handle_events ();
-      }
-    }
-
-  /* l1 phonetic and l2 phonetic */
-      if (!testing && l1l2_assoc_running && train_l1 && train_l2 &&
-    pairs[shuffletable[pairi]].l1phoneticindex != NONE &&
-    pairs[shuffletable[pairi]].l2phoneticindex != NONE)
-  {
-    modify_assoc_weights (l2phoneticunits, l1phoneticunits, l2phoneticprop, nl2phoneticprop, l1phoneticprop, nl1phoneticprop,
-        nl1net, l2l1phoneticassoc, l1l2_assoc_alpha);
-    modify_assoc_weights (l1phoneticunits, l2phoneticunits, l1phoneticprop, nl1phoneticprop, l2phoneticprop, nl2phoneticprop,
-        nl2net, l1l2phoneticassoc, l1l2_assoc_alpha);
-    if (displaying)
-      { 
-        display_lex (L2PHONETICINPMOD, l2phoneticunits, nl2net);
-        display_error (L2PHONETICINPMOD);
-        display_lex (L1PHONETICINPMOD, l1phoneticunits, nl1net);
-        display_error (L1PHONETICINPMOD);
-        wait_and_handle_events ();
-      }
-    }
-
-  }
-
 }
 
 
