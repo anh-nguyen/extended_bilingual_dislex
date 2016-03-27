@@ -51,7 +51,7 @@ void init_stats __P((void));
 void collect_stats __P((int modi));
 void write_error __P((FILE *fp));
 void print_stats __P((int epoch));
-void print_assoc_stats __P((void));
+void collect_assoc_stats __P((int epoch));
 
 /********* defined in graph.c ***********/
 void display_init __P((void));

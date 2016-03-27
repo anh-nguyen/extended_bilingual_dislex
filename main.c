@@ -496,7 +496,7 @@ test_snapshot (epoch)
   init_stats ();
   iterate_pairs ();		/* run through the test set */
 /* print_stats (epoch);		/* performance statistics - not used for bilingual DISLEX */ 
-  print_assoc_stats();
+  collect_assoc_stats(epoch);
 }
 
 
