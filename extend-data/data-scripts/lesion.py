@@ -32,7 +32,7 @@ def lesion_assocs (patient_file, lesion_file, map_sizes, num_reps, noise_amount,
 	l1l2lex_start = sl2lex_start + (map_sizes["l2"]**2)*(map_sizes["sem"]**2)*2 
 	l1lexphonol_start = l1l2lex_start + (map_sizes["l1"]**2)*(map_sizes["l2"]**2)*2 
 	l2lexphonol_start = l1lexphonol_start + (map_sizes["l1"]**2)*(map_sizes["l1"]**2)*2
-	l2lexphonol_exclusive_end = l2lexphonol_start + + (map_sizes["l2"]**2)*(map_sizes["l2"]**2)*2
+	l2lexphonol_exclusive_end = l2lexphonol_start + (map_sizes["l2"]**2)*(map_sizes["l2"]**2)*2
 
 	# iterate until we reach assoc weights
 	for line in patient:	# starting from network-weights
@@ -97,8 +97,8 @@ if __name__ == "__main__":
 	map_sizes = {"l1": 20, "l2": 20, "sem": 20}
 	num_reps = {"l1phonetic": 208, "l2phonetic": 120, "l1lex": 18, "l2lex": 11, "l1phonol": 17, "l2phonol": 12, "sem": 81}
 
-	UTBA18_noise_amount = {'sl1lex': 0.32, 'sl2lex': 0.33, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
-	BUBA01_noise_amount = {'sl1lex': 0, 'sl2lex': 0, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
+	UTBA18_noise_amount = {'sl1lex': 0.1, 'sl2lex': 0.1, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
+	BUBA01_noise_amount = {'sl1lex': 0.032, 'sl2lex': 0.032, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
 	UTBA20_noise_amount = {'sl1lex': 0, 'sl2lex': 0, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
 	UTBA21_noise_amount = {'sl1lex': 0, 'sl2lex': 0, 'l1lexphonol' : 0, 'l2lexphonol' : 0}
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
 	UTBA21_overwrite = False
 
 	lesion_assocs("../../UTBA18-simu", "../../UTBA18-lesioned-simu", map_sizes, num_reps, UTBA18_noise_amount, UTBA18_overwrite)
-	#lesion_assocs("../../BUBA01-simu", "../../BUBA01-lesioned-simu", map_sizes, num_reps, BUBA01_noise_amount, BUBA01_overwrite)
+	#lesion_assocs("../../BUBA01-simu", "../../BUBA01-lesioned-simu-test-2", map_sizes, num_reps, BUBA01_noise_amount, BUBA01_overwrite)
 	#lesion_assocs("../../UTBA20-simu", "../../UTBA20-lesioned-simu", map_sizes, num_reps, UTBA20_noise_amount, UTBA20_overwrite)
 	#lesion_assocs("../../UTBA21-simu", "../../UTBA21-lesioned-simu", map_sizes, num_reps, UTBA21_noise_amount, UTBA21_overwrite)
 

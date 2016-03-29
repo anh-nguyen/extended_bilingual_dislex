@@ -217,7 +217,7 @@ collect_assoc_stats(epoch)
    double best, foo; /* best and worst response found */
 
 
-   bool verbose = FALSE;
+   bool verbose = TRUE;
 
    if (verbose)
     printf("Wrong words (sem -> lex -> phonol -> phonetic):\n");

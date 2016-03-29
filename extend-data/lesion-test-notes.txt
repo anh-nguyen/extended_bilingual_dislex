@@ -1,0 +1,98 @@
+Each patient file is followed by the target correct percentages after lesioning.
+Each entry has the noise amount / Gaussian variance between associations, followed by number of correct answers in both languages.
+
+
+
+
+BUBA01
+	Target: Spanish 0.43 (~ 26 correct)	Eng 0.36 (~ 22 correct)
+	
+	SL1: 0.4		SL2: 0.3 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 0		Eng: 0
+
+	SL1: 0.1		SL2: 0.1 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 7		Eng: 1
+
+	SL1: 0.02		SL2: 0.02 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 39		Eng: 30
+
+	SL1: 0.03		SL2: 0.03 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 33		Eng: 19
+
+	SL1: 0.04		SL2: 0.03 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 26		Eng: 13
+
+	SL1: 0.04		SL2: 0.02 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 31		Eng: 14
+
+	SL1: 0.25		SL2: 0.025 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 36		Eng: 24
+
+	SL1: 0.03		SL2: 0.025 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 34		Eng: 20
+
+	SL1: 0.03		SL2: 0.04 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 28		Eng: 17
+
+	SL1: 0.03		SL2: 0.035 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 31		Eng: 17
+
+	SL1: 0.03		SL2: 0.038 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 30		Eng: 18
+
+	SL1: 0.032		SL2: 0.03 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 31		Eng: 20
+
+	SL1: 0.035		SL2: 0.028 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 31		Eng: 20
+
+*	SL1: 0.032		SL2: 0.034 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 28		Eng: 17
+
+
+UTBA18
+	Target: Spanish 0.32 (~ 19 correct)	Eng 0.28 (~ 17 correct)
+	
+	SL1: 0.32		SL2: 0.33 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 22		Eng: 36
+
+	SL1: 0.35		SL2: 0.35 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 21		Eng: 35
+
+	SL1: 0.04		SL2: 0.04 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 18		Eng: 31
+
+	SL1: 0.04		SL2: 0.05 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 13		Eng: 24
+
+	SL1: 0.03		SL2: 0.06 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 13		Eng: 24
+
+	SL1: 0.01		SL2: 0.07 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 16		Eng: 31
+
+	SL1: 0.1		SL2: 0.07 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 24		Eng: 5
+
+	SL1: 0.08		SL2: 0.07 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 2			Eng: 5
+
+	SL1: 0.05		SL2: 0.05 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 11		Eng: 23
+
+	SL1: 0.07		SL2: 0.05 		L1lexphonol: 0.0		L2lexphonol: 0.0
+	Span: 6			Eng: 16
+
+
+UTBA20
+	Target: Spanish 0.00 (~ 0 correct)	Eng 0.00 (~ 0 correct)
+	
+	SL1: 		SL2:  		L1lexphonol: 		L2lexphonol: 
+	Span: 		Eng: 
+
+
+UTBA21
+	Target: Spanish 0.00 (~ 0 correct)	Eng 0.01 (~ 1 correct)
+
+	SL1: 		SL2:  		L1lexphonol: 		L2lexphonol: 
+	Span: 		Eng: 
