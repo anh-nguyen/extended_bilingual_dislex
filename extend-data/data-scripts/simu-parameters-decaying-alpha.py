@@ -92,6 +92,7 @@ def make_simu_data (patient_file, last_epoch, alpha, starting_radius, l2, l2_sta
 	patient.close()
 
 if __name__ == "__main__":
+	make_simu_data("UTBA01.txt", 1100, 0.25, 50, "l2", 0, ["l1", "l2", "sem"], ["l1l2", "sl1", "sl2"])
 	make_simu_data("UTBA18.txt", 1400, 0.25, 50, "l2", 180, ["l1", "l2", "sem"], ["l1l2", "sl1", "sl2"])
 	make_simu_data("BUBA01.txt", 800, 0.25, 50, "l2", 180, ["l1", "l2", "sem"], ["l1l2", "sl1", "sl2"])
 	make_simu_data("UTBA20.txt", 1700, 0.25, 50, "l2", 300, ["l1", "l2", "sem"], ["l1l2", "sl1", "sl2"])
